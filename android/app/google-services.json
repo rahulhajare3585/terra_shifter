@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "973117776748",
+    "project_id": "terra-shifter",
+    "storage_bucket": "terra-shifter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973117776748:android:4a50531c2c57e7aaf8c949",
+        "android_client_info": {
+          "package_name": "com.example.terra_shifter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBn_aPasslecaz2Jdaol6uFh4PBHB4LKPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
