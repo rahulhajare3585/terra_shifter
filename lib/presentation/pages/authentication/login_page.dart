@@ -5,8 +5,8 @@ import 'package:terra_shifter/presentation/blocs/login/login_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/login/login_event.dart';
 import 'package:terra_shifter/presentation/blocs/login/login_state.dart';
 import 'package:terra_shifter/presentation/blocs/register/register_bloc.dart';
-import 'package:terra_shifter/presentation/pages/home_page.dart';
-import 'package:terra_shifter/presentation/pages/register_page.dart';
+import 'package:terra_shifter/presentation/pages/landing/landing_page.dart';
+import 'package:terra_shifter/presentation/pages/authentication/register_page.dart';
 import 'package:terra_shifter/data/Services/login_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage>
           if (state is LoginSuccess) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => HomePage(),
+                builder: (context) => LandingPage(),
               ),
             );
             ScaffoldMessenger.of(context).showSnackBar(

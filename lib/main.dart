@@ -1,11 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:terra_shifter/data/Services/login_service.dart';
-import 'package:terra_shifter/presentation/blocs/login/login_bloc.dart';
+import 'package:terra_shifter/presentation/pages/landing/landing_page.dart';
 import 'core/utils/theme_notifier.dart';
-import 'presentation/pages/login_page.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,15 +21,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: themeNotifier.currentTheme,
-      home: BlocProvider(
-        create: (context) => LoginBloc(LoginService()),
-        child: LoginPage(),
-      ),
+      // home: BlocProvider(
+      //   create: (context) => LoginBloc(LoginService()),
+      //   child: LoginPage(),
+      // ),
+      home: LandingPage(),
     );
   }
 }

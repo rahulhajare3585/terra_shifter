@@ -17,7 +17,7 @@ class ThemeConfig {
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
-      iconTheme: IconThemeData(color: customGreen),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.black, fontSize: 16),

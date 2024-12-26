@@ -4,7 +4,7 @@ import 'package:terra_shifter/data/models/users.dart';
 import 'package:terra_shifter/presentation/blocs/register/register_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/register/register_event.dart';
 import 'package:terra_shifter/presentation/blocs/register/register_state.dart';
-import 'package:terra_shifter/presentation/pages/login_page.dart';
+import 'package:terra_shifter/presentation/pages/authentication/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   @override

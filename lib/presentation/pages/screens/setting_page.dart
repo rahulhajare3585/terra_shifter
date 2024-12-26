@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:terra_shifter/core/utils/theme_config.dart';
 import 'package:terra_shifter/core/utils/theme_notifier.dart';
-import 'package:terra_shifter/presentation/pages/login_page.dart';
+import 'package:terra_shifter/presentation/pages/authentication/login_page.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
