@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:terra_shifter/data/models/customer.dart';
+import 'package:terra_shifter/core/usecases/app_localization.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_event.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_state.dart';
@@ -15,6 +16,7 @@ class _CustomerPageState extends State<CustomerPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
+  
   Customer? customerdata;
   bool isAddingCustomer = false;
 
@@ -45,6 +47,7 @@ class _CustomerPageState extends State<CustomerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       body: Padding(
@@ -53,7 +56,7 @@ class _CustomerPageState extends State<CustomerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 5),
-            if (isAddingCustomer) _buildCustomerForm(theme), // Show form if adding customer
+            if (isAddingCustomer) _buildCustomerForm(theme, localizations),
             const SizedBox(height: 10),
             Expanded(
               child: BlocConsumer<CustomerBloc, CustomerState>(
@@ -63,7 +66,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       SnackBar(
                         content: Text(state.message),
                         behavior: SnackBarBehavior.floating,
-                      )
+                      ),
                     );
                   } else if (state is CustomerError) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -72,8 +75,8 @@ class _CustomerPageState extends State<CustomerPage> {
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
+                    _toggleForm();
                   }
-                  _toggleForm();
                 },
                 builder: (context, state) {
                   if (state is CustomerLoading) {
@@ -97,11 +100,11 @@ class _CustomerPageState extends State<CustomerPage> {
                       itemCount: state.customers.length,
                       itemBuilder: (context, index) {
                         final customer = state.customers[index];
-                        return _buildCustomerCard(customer);
+                        return _buildCustomerCard(customer, localizations);
                       },
                     );
                   }
-                  return const Center(child: Text("No data available."));
+                  return Center(child: Text(localizations?.translate('no_data_available') ?? "No data available"));
                 },
               ),
             ),
@@ -116,7 +119,7 @@ class _CustomerPageState extends State<CustomerPage> {
     );
   }
 
-  Widget _buildCustomerForm(ThemeData theme) {
+  Widget _buildCustomerForm(ThemeData theme, AppLocalizations? localizations) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -126,15 +129,15 @@ class _CustomerPageState extends State<CustomerPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text(
-              'Customer Details',
+            Text(
+              localizations?.translate('customer_details') ?? 'Customer Details',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: nameController,
               decoration: InputDecoration(
-                labelText: "Customer Name",
+                labelText: localizations?.translate('customer_name') ?? "Customer Name",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -145,7 +148,7 @@ class _CustomerPageState extends State<CustomerPage> {
             TextFormField(
               controller: addressController,
               decoration: InputDecoration(
-                labelText: "Customer Address",
+                labelText: localizations?.translate('customer_address') ?? "Customer Address",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -156,7 +159,7 @@ class _CustomerPageState extends State<CustomerPage> {
             TextFormField(
               controller: contactController,
               decoration: InputDecoration(
-                labelText: "Contact Number",
+                labelText: localizations?.translate('contact_number') ?? "Contact Number",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -165,23 +168,32 @@ class _CustomerPageState extends State<CustomerPage> {
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Column(
               children: [
-                _buildActionButton("Add", Icons.add, () {
-                  final customer = Customer(
-                    id: idController.text.toString(),
-                    name: nameController.text,
-                    address: addressController.text,
-                    contactNumber: contactController.text,
-                  );
-                  context.read<CustomerBloc>().add(AddCustomerEvent(customer));
-                  _clearForm();
-                }),
-                _buildActionButton(".", Icons.refresh, () {
-                  _clearForm();
-                }),
-                _buildActionButton("Update", Icons.update, () {
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildActionButton(localizations?.translate('add') ?? 'Add', Icons.add, () {
+                        final customer = Customer(
+                          id: idController.text.toString(),
+                          name: nameController.text,
+                          address: addressController.text,
+                          contactNumber: contactController.text,
+                        );
+                        context.read<CustomerBloc>().add(AddCustomerEvent(customer));
+                        _clearForm();
+                      }),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildActionButton(localizations?.translate('refresh') ?? 'Refresh', Icons.refresh, () {
+                        _clearForm();
+                      }),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _buildActionButton(localizations?.translate('update') ?? 'Update', Icons.update, () {
                   final customer = Customer(
                     id: customerdata?.id ?? idController.text,
                     name: nameController.text,
@@ -213,7 +225,7 @@ class _CustomerPageState extends State<CustomerPage> {
     );
   }
 
-  Widget _buildCustomerCard(Customer customer) {
+  Widget _buildCustomerCard(Customer customer, AppLocalizations? localizations) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

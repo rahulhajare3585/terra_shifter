@@ -8,6 +8,7 @@ import 'package:terra_shifter/presentation/blocs/register/register_bloc.dart';
 import 'package:terra_shifter/presentation/pages/landing/landing_page.dart';
 import 'package:terra_shifter/presentation/pages/authentication/register_page.dart';
 import 'package:terra_shifter/data/Services/login_service.dart';
+import 'package:terra_shifter/core/usecases/app_localization.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -52,6 +53,7 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context);
 
     return BlocProvider(
       create: (context) => LoginBloc(LoginService()),
@@ -108,7 +110,7 @@ class _LoginPageState extends State<LoginPage>
                       FadeTransition(
                         opacity: _logoAnimation,
                         child: Text(
-                          'Welcome Back!',
+                          localizations?.translate('welcome_back') ?? 'Welcome Back!',
                           style: TextStyle(
                             fontSize: 26.0,
                             fontWeight: FontWeight.bold,
@@ -142,7 +144,7 @@ class _LoginPageState extends State<LoginPage>
                                       controller: _emailController,
                                       keyboardType: TextInputType.emailAddress,
                                       decoration: InputDecoration(
-                                        labelText: 'Email Address',
+                                        labelText: localizations?.translate('email_address') ?? 'Email Address',
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(12.0),
@@ -155,7 +157,7 @@ class _LoginPageState extends State<LoginPage>
                                       controller: _passwordController,
                                       obscureText: true,
                                       decoration: InputDecoration(
-                                        labelText: 'Password',
+                                        labelText: localizations?.translate('password') ?? 'Password',
                                         border: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(12.0),
@@ -203,7 +205,7 @@ class _LoginPageState extends State<LoginPage>
                                                 ),
                                               )
                                             : Text(
-                                                'Login',
+                                                localizations?.translate('login') ?? 'Login',
                                                 style: TextStyle(
                                                   fontSize: 16.0,
                                                   color: theme.textTheme
@@ -221,7 +223,7 @@ class _LoginPageState extends State<LoginPage>
                                           // Forgot password action
                                         },
                                         child: Text(
-                                          'Forgot Password?',
+                                          localizations?.translate('forgot_password') ?? 'Forgot Password?',
                                           style: TextStyle(
                                               color: theme.primaryColor),
                                         ),
@@ -240,7 +242,7 @@ class _LoginPageState extends State<LoginPage>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Don\'t have an account?',
+                            localizations?.translate('dont_have_account') ?? 'Don\'t have an account?',
                             style: TextStyle(
                               fontSize: 14.0,
                               color: Colors.blueGrey[600],
@@ -258,7 +260,7 @@ class _LoginPageState extends State<LoginPage>
                               );
                             },
                             child: Text(
-                              'Sign Up',
+                              localizations?.translate('sign_up') ?? 'Sign Up',
                               style: TextStyle(
                                 color: theme.primaryColor,
                                 fontWeight: FontWeight.bold,

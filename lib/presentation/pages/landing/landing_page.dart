@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
 import 'package:terra_shifter/data/Services/customer_service.dart';
+import 'package:terra_shifter/core/usecases/app_localization.dart';
+import 'package:terra_shifter/data/Services/plates_service.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_bloc.dart';
+import 'package:terra_shifter/presentation/blocs/plates/plates_bloc.dart';
 import 'package:terra_shifter/presentation/pages/screens/customer_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/home_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/plates_page.dart';
@@ -16,7 +19,6 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPage extends State<LandingPage> with TickerProviderStateMixin {
   late MotionTabBarController _motionTabBarController;
-   String titleText='Terra Shifter';
 
   @override
   void initState() {
@@ -37,12 +39,14 @@ class _LandingPage extends State<LandingPage> with TickerProviderStateMixin {
   void _onFlyoutMenuSelected(String value) {
     switch (value) {
       case 'Plates':
-        titleText='Plates';
-         Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => PlatesPage(),
-              ),
-            );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
+              create: (context) => PlatesBloc(PlatesService()),
+              child: PlatesPage(),
+            ),
+          ),
+        );
         break;
       case 'Logout':
         // Handle logout
@@ -56,21 +60,31 @@ class _LandingPage extends State<LandingPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(titleText),
+        title: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 60.0),
+              child: Image.asset('assets/images/logo.png', height: 120),
+            ),
+          ),
+        ),
         actions: [
           PopupMenuButton<String>(
             onSelected: _onFlyoutMenuSelected,
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'Plates',
-                  child: Text('Plates'),
+                  child: Text(localizations?.translate('plates') ?? 'Plates'),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'Logout',
-                  child: Text('Logout'),
+                  child: Text(localizations?.translate('logout') ?? 'Logout'),
                 ),
               ];
             },
@@ -79,9 +93,13 @@ class _LandingPage extends State<LandingPage> with TickerProviderStateMixin {
       ),
       bottomNavigationBar: MotionTabBar(
         controller: _motionTabBarController,
-        initialSelectedTab: "Home",
+        initialSelectedTab: localizations?.translate('home') ?? "Home",
         useSafeArea: true,
-        labels: const ["Customers", "Home", "Settings"],
+        labels: [
+          localizations?.translate('customers') ?? "Customers",
+          localizations?.translate('home') ?? "Home",
+          localizations?.translate('settings') ?? "Settings",
+        ],
         icons: const [Icons.people, Icons.home, Icons.settings],
         tabBarHeight: 60,
         textStyle: const TextStyle(
