@@ -16,6 +16,7 @@ class _CustomerPageState extends State<CustomerPage> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
   Customer? customerdata;
+  bool isAddingCustomer = false;
 
   @override
   void initState() {
@@ -26,10 +27,18 @@ class _CustomerPageState extends State<CustomerPage> {
   void _populateCustomerDetails(Customer customer) {
     setState(() {
       customerdata = customer;
-      idController.text = customer.id;
       nameController.text = customer.name;
       addressController.text = customer.address;
       contactController.text = customer.contactNumber;
+    });
+  }
+
+  void _toggleForm() {
+    setState(() {
+      isAddingCustomer = !isAddingCustomer;
+      if (!isAddingCustomer) {
+        _clearForm();
+      }
     });
   }
 
@@ -39,20 +48,22 @@ class _CustomerPageState extends State<CustomerPage> {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              BlocConsumer<CustomerBloc, CustomerState>(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 5),
+            if (isAddingCustomer) _buildCustomerForm(theme), // Show form if adding customer
+            const SizedBox(height: 10),
+            Expanded(
+              child: BlocConsumer<CustomerBloc, CustomerState>(
                 listener: (context, state) {
                   if (state is CustomerOperationSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.message),
                         behavior: SnackBarBehavior.floating,
-                      ),
+                      )
                     );
                   } else if (state is CustomerError) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -62,6 +73,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       ),
                     );
                   }
+                  _toggleForm();
                 },
                 builder: (context, state) {
                   if (state is CustomerLoading) {
@@ -79,35 +91,32 @@ class _CustomerPageState extends State<CustomerPage> {
                         : '1';
                     idController.text = nextId;
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildCustomerForm(theme),
-                        const SizedBox(height: 24),
-                        const Text(
-                          "Customer List",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildCustomerList(state.customers),
-                      ],
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: state.customers.length,
+                      itemBuilder: (context, index) {
+                        final customer = state.customers[index];
+                        return _buildCustomerCard(customer);
+                      },
                     );
                   }
                   return const Center(child: Text("No data available."));
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _toggleForm, 
+        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: theme.primaryColor,
       ),
     );
   }
 
   Widget _buildCustomerForm(ThemeData theme) {
-    final ThemeData theme = Theme.of(context);
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -169,6 +178,9 @@ class _CustomerPageState extends State<CustomerPage> {
                   context.read<CustomerBloc>().add(AddCustomerEvent(customer));
                   _clearForm();
                 }),
+                _buildActionButton(".", Icons.refresh, () {
+                  _clearForm();
+                }),
                 _buildActionButton("Update", Icons.update, () {
                   final customer = Customer(
                     id: customerdata?.id ?? idController.text,
@@ -178,11 +190,7 @@ class _CustomerPageState extends State<CustomerPage> {
                   );
                   context.read<CustomerBloc>().add(UpdateCustomerEvent(customer));
                   _clearForm();
-                }),
-                _buildActionButton("Delete", Icons.delete, () {
-                  context.read<CustomerBloc>().add(DeleteCustomerEvent(customerdata?.id ?? idController.text));
-                  _clearForm();
-                }),
+                }, isEnabled: nameController.text.isNotEmpty && addressController.text.isNotEmpty && contactController.text.isNotEmpty),
               ],
             ),
           ],
@@ -191,12 +199,11 @@ class _CustomerPageState extends State<CustomerPage> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed) {
-    final ThemeData theme = Theme.of(context);
+  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed, {bool isEnabled = true}) {
     return ElevatedButton.icon(
-      onPressed: onPressed,
+      onPressed: isEnabled ? onPressed : null,
       icon: Icon(icon),
-      label: Text(label, style: TextStyle(fontSize: 16, color: theme.textTheme.bodySmall?.color)),
+      label: Text(label, style: TextStyle(fontSize: 16, color: Colors.white)),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(
@@ -206,29 +213,95 @@ class _CustomerPageState extends State<CustomerPage> {
     );
   }
 
-  Widget _buildCustomerList(List<Customer> customers) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: customers.length,
-      itemBuilder: (context, index) {
-        final customer = customers[index];
-        return Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildCustomerCard(Customer customer) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      color: Theme.of(context).cardColor,
+      child: InkWell(
+        onTap: () => _populateCustomerDetails(customer),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Theme.of(context).primaryColor,
+                child: const Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      customer.name,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.black54,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            customer.address,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Colors.black54,
+                                ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.phone,
+                          color: Colors.blueAccent,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          customer.contactNumber,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey,
+                size: 18,
+              ),
+            ],
           ),
-          child: ListTile(
-            title: Text(
-              customer.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(customer.address),
-            trailing: Text(customer.contactNumber),
-            onTap: () => _populateCustomerDetails(customer),
-          ),
-        );
-      },
+        ),
+      ),
     );
   }
 
