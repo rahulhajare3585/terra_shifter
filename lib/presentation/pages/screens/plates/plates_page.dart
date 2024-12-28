@@ -25,13 +25,17 @@ class _PlatesPage extends State<PlatesPage> {
 
   // Controllers to handle the text input fields
   final TextEditingController _customerNameController = TextEditingController();
-  final TextEditingController _contactNumberController = TextEditingController();
+  final TextEditingController _contactNumberController =
+      TextEditingController();
   final TextEditingController _totalDaysController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _amountPerMonthController = TextEditingController();
+  final TextEditingController _amountPerMonthController =
+      TextEditingController();
   final TextEditingController _totalAmountController = TextEditingController();
-  final TextEditingController _receivedAmountController = TextEditingController();
-  final TextEditingController _pendingAmountController = TextEditingController();
+  final TextEditingController _receivedAmountController =
+      TextEditingController();
+  final TextEditingController _pendingAmountController =
+      TextEditingController();
   final TextEditingController _givenDateController = TextEditingController();
   final TextEditingController _receivedDateController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
@@ -45,6 +49,11 @@ class _PlatesPage extends State<PlatesPage> {
     super.initState();
     _fetchCustomers();
     _generateNewPlateId();
+
+    // Add listeners to update total amount automatically
+    _amountPerMonthController.addListener(_updateTotalAmount);
+    _quantityController.addListener(_updateTotalAmount);
+    _totalDaysController.addListener(_updateTotalAmount);
   }
 
   Future<void> _fetchCustomers() async {
@@ -79,21 +88,27 @@ class _PlatesPage extends State<PlatesPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)?.translate('select_customer') ?? 'Select Customer'),
+          title: Text(
+              AppLocalizations.of(context)?.translate('select_customer') ??
+                  'Select Customer'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  labelText: AppLocalizations.of(context)?.translate('search') ?? 'Search',
+                  labelText:
+                      AppLocalizations.of(context)?.translate('search') ??
+                          'Search',
                   prefixIcon: Icon(Icons.search),
                 ),
                 onChanged: (value) {
                   setState(() {
                     _filteredCustomers = _customers
                         .where((customer) =>
-                            customer.name.toLowerCase().contains(value.toLowerCase()) ||
+                            customer.name
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
                             customer.contactNumber.contains(value))
                         .toList();
                   });
@@ -126,6 +141,43 @@ class _PlatesPage extends State<PlatesPage> {
       setState(() {
         _totalDays = _receivedDate!.difference(_givenDate!).inDays;
         _totalDaysController.text = _totalDays.toString();
+        _updateTotalAmount();
+      });
+    }
+  }
+
+  double _calculateTotalAmount(
+      double amountPerMonth, int quantity, int totalDays) {
+    // Calculate the total amount based on the amount per month for 100 plates for 30 days
+    double amountPerDayPerPlate = amountPerMonth / 30 / 100;
+    return amountPerDayPerPlate * quantity * totalDays;
+  }
+
+  void _updateTotalAmount() {
+    if (_amountPerMonthController.text.isNotEmpty &&
+        _quantityController.text.isNotEmpty &&
+        _totalDaysController.text.isNotEmpty) {
+      final amountPerMonth =
+          double.tryParse(_amountPerMonthController.text) ?? 0.0;
+      final quantity = int.tryParse(_quantityController.text) ?? 0;
+      final totalDays = int.tryParse(_totalDaysController.text) ?? 0;
+      final totalAmount =
+          _calculateTotalAmount(amountPerMonth, quantity, totalDays);
+      setState(() {
+        _totalAmountController.text = totalAmount.toStringAsFixed(2);
+      });
+    }
+  }
+
+  void _updatePendingAmount() {
+    if (_totalAmountController.text.isNotEmpty &&
+        _receivedAmountController.text.isNotEmpty) {
+      final totalAmount = double.tryParse(_totalAmountController.text) ?? 0.0;
+      final receivedAmount =
+          double.tryParse(_receivedAmountController.text) ?? 0.0;
+      final pendingAmount = totalAmount - receivedAmount;
+      setState(() {
+        _pendingAmountController.text = pendingAmount.toString();
       });
     }
   }
@@ -161,6 +213,7 @@ class _PlatesPage extends State<PlatesPage> {
     if (_formKey.currentState!.validate()) {
       final plate = Plates(
         id: _newPlateId,
+        customerId: _selectedCustomerId!,
         customerName: _customerNameController.text,
         contactNumber: _contactNumberController.text,
         givenDate: _givenDate!,
@@ -181,6 +234,7 @@ class _PlatesPage extends State<PlatesPage> {
     if (_formKey.currentState!.validate()) {
       final plate = Plates(
         id: _newPlateId,
+        customerId: _selectedCustomerId!,
         customerName: _customerNameController.text,
         contactNumber: _contactNumberController.text,
         givenDate: _givenDate!,
@@ -202,16 +256,19 @@ class _PlatesPage extends State<PlatesPage> {
     final localizations = AppLocalizations.of(context);
 
     return BlocProvider(
-      create: (context) => PlatesBloc(PlatesService())..add(GetAllPlatesEvent()),
+      create: (context) =>
+          PlatesBloc(PlatesService())..add(GetAllPlatesEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(localizations?.translate('plates_details') ?? 'Plates Details'),
+          title: Text(
+              localizations?.translate('plates_details') ?? 'Plates Details'),
           elevation: 0,
         ),
         body: BlocListener<PlatesBloc, PlatesState>(
           listener: (context, state) {
             if (state is PlatesOperationSuccess) {
               _showToast(state.message);
+              Navigator.of(context).pop(); // Navigate back after success
             } else if (state is PlatesError) {
               _showToast(state.error);
             }
@@ -225,7 +282,8 @@ class _PlatesPage extends State<PlatesPage> {
                   // Customer Selection Button
                   ElevatedButton(
                     onPressed: _showCustomerSelectionDialog,
-                    child: Text(localizations?.translate('select_customer') ?? 'Select Customer'),
+                    child: Text(localizations?.translate('select_customer') ??
+                        'Select Customer'),
                   ),
                   const SizedBox(height: 16),
 
@@ -233,16 +291,20 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _customerNameController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('customer_name') ?? 'Customer Name',
+                      labelText: localizations?.translate('customer_name') ??
+                          'Customer Name',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_customer_name') ?? 'Please enter the customer name';
+                        return localizations
+                                ?.translate('please_enter_customer_name') ??
+                            'Please enter the customer name';
                       }
                       return null;
                     },
@@ -253,10 +315,12 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _contactNumberController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('contact_number') ?? 'Contact Number',
+                      labelText: localizations?.translate('contact_number') ??
+                          'Contact Number',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.phone, color: theme.primaryColor),
@@ -264,7 +328,9 @@ class _PlatesPage extends State<PlatesPage> {
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_contact_number') ?? 'Please enter a contact number';
+                        return localizations
+                                ?.translate('please_enter_contact_number') ??
+                            'Please enter a contact number';
                       }
                       return null;
                     },
@@ -274,13 +340,16 @@ class _PlatesPage extends State<PlatesPage> {
                   // Given Date Input (Date Picker)
                   TextFormField(
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('given_date') ?? 'Given Date',
+                      labelText: localizations?.translate('given_date') ??
+                          'Given Date',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
                       border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today, color: theme.primaryColor),
+                      suffixIcon:
+                          Icon(Icons.calendar_today, color: theme.primaryColor),
                     ),
                     readOnly: true,
                     onTap: () async {
@@ -297,20 +366,26 @@ class _PlatesPage extends State<PlatesPage> {
                         });
                       }
                     },
-                    controller: TextEditingController(text: _givenDate == null ? '' : _givenDate!.toLocal().toString().split(' ')[0]),
+                    controller: TextEditingController(
+                        text: _givenDate == null
+                            ? ''
+                            : _givenDate!.toLocal().toString().split(' ')[0]),
                   ),
                   const SizedBox(height: 16),
 
                   // Received Date Input (Date Picker)
                   TextFormField(
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('received_date') ?? 'Received Date',
+                      labelText: localizations?.translate('received_date') ??
+                          'Received Date',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
                       border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today, color: theme.primaryColor),
+                      suffixIcon:
+                          Icon(Icons.calendar_today, color: theme.primaryColor),
                     ),
                     readOnly: true,
                     onTap: () async {
@@ -327,7 +402,13 @@ class _PlatesPage extends State<PlatesPage> {
                         });
                       }
                     },
-                    controller: TextEditingController(text: _receivedDate == null ? '' : _receivedDate!.toLocal().toString().split(' ')[0]),
+                    controller: TextEditingController(
+                        text: _receivedDate == null
+                            ? ''
+                            : _receivedDate!
+                                .toLocal()
+                                .toString()
+                                .split(' ')[0]),
                   ),
                   const SizedBox(height: 16),
 
@@ -335,10 +416,12 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _totalDaysController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('total_days') ?? 'Total Days',
+                      labelText: localizations?.translate('total_days') ??
+                          'Total Days',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
                       border: OutlineInputBorder(),
                     ),
@@ -351,17 +434,21 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _quantityController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('quantity') ?? 'Quantity',
+                      labelText:
+                          localizations?.translate('quantity') ?? 'Quantity',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_quantity') ?? 'Please enter the quantity';
+                        return localizations
+                                ?.translate('please_enter_quantity') ??
+                            'Please enter the quantity';
                       }
                       return null;
                     },
@@ -372,17 +459,21 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _amountPerMonthController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('amount_per_month') ?? 'Amount Per Month',
+                      labelText: localizations?.translate('amount_per_month') ??
+                          'Amount Per Month',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_amount_per_month') ?? 'Please enter the amount per month';
+                        return localizations
+                                ?.translate('please_enter_amount_per_month') ??
+                            'Please enter the amount per month';
                       }
                       return null;
                     },
@@ -393,20 +484,17 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _totalAmountController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('total_amount') ?? 'Total Amount',
+                      labelText: localizations?.translate('total_amount') ??
+                          'Total Amount',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_total_amount') ?? 'Please enter the total amount';
-                      }
-                      return null;
-                    },
+                    readOnly: true,
                   ),
                   const SizedBox(height: 16),
 
@@ -414,38 +502,51 @@ class _PlatesPage extends State<PlatesPage> {
                   TextFormField(
                     controller: _receivedAmountController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('received_amount') ?? 'Received Amount',
+                      labelText: localizations?.translate('received_amount') ??
+                          'Received Amount',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_received_amount') ?? 'Please enter the received amount';
+                        return localizations
+                                ?.translate('please_enter_received_amount') ??
+                            'Please enter the received amount';
                       }
                       return null;
                     },
+                    onChanged: (value) {
+                      // Call _updatePendingAmount whenever the received amount changes
+                      _updatePendingAmount();
+                    },
                   ),
+
                   const SizedBox(height: 16),
 
                   // Pending Amount Input
                   TextFormField(
                     controller: _pendingAmountController,
                     decoration: InputDecoration(
-                      labelText: localizations?.translate('pending_amount') ?? 'Pending Amount',
+                      labelText: localizations?.translate('pending_amount') ??
+                          'Pending Amount',
                       labelStyle: TextStyle(color: theme.primaryColor),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: theme.primaryColor, width: 2),
+                        borderSide:
+                            BorderSide(color: theme.primaryColor, width: 2),
                       ),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations?.translate('please_enter_pending_amount') ?? 'Please enter the pending amount';
+                        return localizations
+                                ?.translate('please_enter_pending_amount') ??
+                            'Please enter the pending amount';
                       }
                       return null;
                     },
@@ -463,9 +564,11 @@ class _PlatesPage extends State<PlatesPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 12),
                         ),
-                        child: Text(localizations?.translate('save') ?? 'Save', style: const TextStyle(fontSize: 16)),
+                        child: Text(localizations?.translate('save') ?? 'Save',
+                            style: const TextStyle(fontSize: 16)),
                       ),
                       ElevatedButton(
                         onPressed: () => _editData(context),
@@ -474,9 +577,12 @@ class _PlatesPage extends State<PlatesPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 12),
                         ),
-                        child: Text(localizations?.translate('edit') ?? 'Edit', style: const TextStyle(fontSize: 16)),
+                        child: Text(
+                            localizations?.translate('update') ?? 'Update',
+                            style: const TextStyle(fontSize: 16)),
                       ),
                     ],
                   ),

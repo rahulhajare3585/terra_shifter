@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:terra_shifter/data/Services/plates_service.dart';
-import 'package:terra_shifter/presentation/blocs/plates/plates_event.dart';
-import 'package:terra_shifter/presentation/blocs/plates/plates_state.dart';
+import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_event.dart';
+import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_state.dart';
 
-class PlatesBloc extends Bloc<PlatesEvent, PlatesState> {
+class PlateDetailsBloc extends Bloc<PlateDetailsEvent, PlateDetailsState> {
   final PlatesService platesService;
 
-  PlatesBloc(this.platesService) : super(PlatesInitial()) {
+  PlateDetailsBloc(this.platesService) : super(PlatesInitial()) {
     on<AddPlateEvent>((event, emit) async {
       emit(PlatesLoading());
       try {

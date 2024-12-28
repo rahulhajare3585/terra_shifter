@@ -1,0 +1,21 @@
+# This is a generated file; do not edit or check into version control.
+cloud_firestore=/Users/rahulhajare/.pub-cache/hosted/pub.dev/cloud_firestore-5.6.0/
+cloud_firestore_web=/Users/rahulhajare/.pub-cache/hosted/pub.dev/cloud_firestore_web-4.4.0/
+firebase_auth=/Users/rahulhajare/.pub-cache/hosted/pub.dev/firebase_auth-5.3.4/
+firebase_auth_web=/Users/rahulhajare/.pub-cache/hosted/pub.dev/firebase_auth_web-5.13.5/
+firebase_core=/Users/rahulhajare/.pub-cache/hosted/pub.dev/firebase_core-3.9.0/
+firebase_core_web=/Users/rahulhajare/.pub-cache/hosted/pub.dev/firebase_core_web-2.19.0/
+fluttertoast=/Users/rahulhajare/.pub-cache/hosted/pub.dev/fluttertoast-8.2.10/
+path_provider=/Users/rahulhajare/.pub-cache/hosted/pub.dev/path_provider-2.1.5/
+path_provider_android=/Users/rahulhajare/.pub-cache/hosted/pub.dev/path_provider_android-2.2.15/
+path_provider_foundation=/Users/rahulhajare/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/
+path_provider_linux=/Users/rahulhajare/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
+path_provider_windows=/Users/rahulhajare/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
+printing=/Users/rahulhajare/.pub-cache/hosted/pub.dev/printing-5.13.4/
+url_launcher=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher-6.3.1/
+url_launcher_android=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_android-6.3.14/
+url_launcher_ios=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_ios-6.3.2/
+url_launcher_linux=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_linux-3.2.1/
+url_launcher_macos=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_macos-3.2.2/
+url_launcher_web=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_web-2.3.3/
+url_launcher_windows=/Users/rahulhajare/.pub-cache/hosted/pub.dev/url_launcher_windows-3.1.3/

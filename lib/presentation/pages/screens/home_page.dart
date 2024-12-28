@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart'; // For pie chart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:terra_shifter/core/usecases/app_localization.dart';
+import 'package:terra_shifter/data/Services/plates_service.dart';
+import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/plates_details_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,43 +18,50 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
-      body: Column(
-        children: [
-          // Pie Chart
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              height: 300,
-              child: AnimatedSwitcher(
-                duration: Duration(seconds: 1), // Duration of the animation
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Pie Chart
+            Expanded(
+              flex: 2,
+              child: SizedBox(
+                height: 300,
                 child: PieChart(
                   PieChartData(
-                    sectionsSpace: 0, // Space between sections
-                    startDegreeOffset: 180, // Start drawing from the bottom
+                    sectionsSpace: 0,
+                    startDegreeOffset: 120,
+                    centerSpaceRadius: 50,
                     sections: [
                       PieChartSectionData(
                         value: spentAmount,
-                        title: 'Spent',
+                        title: localizations?.translate('spent') ?? 'Spent',
                         color: Colors.red,
                         radius: 50,
-                        titleStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        titleStyle: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                         showTitle: true,
                       ),
                       PieChartSectionData(
                         value: receivedAmount,
-                        title: 'Get',
+                        title: localizations?.translate('received') ?? 'Received',
                         color: Colors.green,
                         radius: 50,
-                        titleStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        titleStyle: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                         showTitle: true,
                       ),
                       PieChartSectionData(
                         value: totalAmount - (spentAmount + receivedAmount),
-                        title: 'Rem',
+                        title: localizations?.translate('remaining') ?? 'Remaining',
                         color: Colors.blue,
                         radius: 50,
-                        titleStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        titleStyle: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                         showTitle: true,
                       ),
                     ],
@@ -57,51 +69,75 @@ class _HomePage extends State<HomePage> {
                 ),
               ),
             ),
-          ),
-          // Display Amounts
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Spent Amount: \$${spentAmount.toStringAsFixed(2)}', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 8),
-                Text('Received Amount: \$${receivedAmount.toStringAsFixed(2)}', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 8),
-                Text('Total Amount: \$${totalAmount.toStringAsFixed(2)}', style: TextStyle(fontSize: 18)),
-              ],
+            const SizedBox(width: 16),
+            // Display Amounts
+            Center(
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${localizations?.translate('spent_amount') ?? 'Spent Amount'}: \₹ ${spentAmount.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${localizations?.translate('received_amount') ?? 'Received Amount'}: \₹ ${receivedAmount.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${localizations?.translate('total_amount') ?? 'Total Amount'}: \₹ ${totalAmount.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 36.0), // Move up by 20
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FloatingActionButton(
+              heroTag: 'plates', // Unique hero tag
+              backgroundColor: Colors.white,
               onPressed: () {
-                // Add your functionality here
+                // Navigate to plates page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                              create: (context) => PlateDetailsBloc(PlatesService()),
+                              child: PlatesDetailsPage(),
+                            )));
               },
-              child: Icon(Icons.circle_outlined),
-              tooltip: 'Plates',
+              tooltip: localizations?.translate('plates') ?? 'Plates',
+              child: Image.asset('assets/images/plate.png', width: 50, height: 50),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             FloatingActionButton(
+              heroTag: 'tractor', // Unique hero tag
+              backgroundColor: Colors.white,
               onPressed: () {
                 // Add your functionality here
               },
-              child: Icon(Icons.directions_car),
-              tooltip: 'Tractor',
+              tooltip: localizations?.translate('tractor') ?? 'Tractor',
+              child: Image.asset('assets/images/power_tiller.png', width: 50, height: 50),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             FloatingActionButton(
+              heroTag: 'power_tillers', // Unique hero tag
+              backgroundColor: Colors.white,
               onPressed: () {
                 // Add your functionality here
               },
-              child: Icon(Icons.agriculture),
-              tooltip: 'Power Tillers',
+              tooltip: localizations?.translate('power_tillers') ?? 'Power Tillers',
+              child: Image.asset('assets/images/tractor.png', width: 50, height: 50),
             ),
           ],
         ),

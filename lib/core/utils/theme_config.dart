@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 class ThemeConfig {
   // Light Theme
   static const Color customGreen = Color(0xFF11422D);
-  static  ThemeData selectedTheme = orangeTheme;
+  static  ThemeData selectedTheme = lightTheme;
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: customGreen,
     indicatorColor: customGreen,
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: Color.fromARGB(255, 213, 220, 216),
     appBarTheme: const AppBarTheme(
       color: customGreen,
       elevation: 0,

@@ -46,6 +46,5 @@ class MyApp extends StatelessWidget {
       locale: localeNotifier.locale,
       home: LandingPage(),
     );
-    
   }
 }

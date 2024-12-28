@@ -18,3 +18,5 @@ samples, guidance on mobile development, and a full API reference.
 # for launcher icons
 flutter pub run flutter_launcher_icons:main
 
+#loader link
+https://app.lottiefiles.com/share/0bd2fa5c-b8be-4917-95c0-b0c01ab5ceed

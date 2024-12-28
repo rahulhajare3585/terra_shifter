@@ -24,6 +24,9 @@ dependencies:
   hive: ^2.2.3
   fluttertoast: ^8.2.10
   fl_chart: ^0.70.0
+  lottie: ^3.3.0
+  pdf: ^3.11.1
+  printing: ^5.13.4
 
 flutter_icons:
   android: true
@@ -44,5 +47,7 @@ flutter:
   assets:
     - assets/images/
     - assets/l10n/
+    - assets/lottie/
+    
     
 
