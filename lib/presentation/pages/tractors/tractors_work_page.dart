@@ -124,38 +124,41 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                     },
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    final quantity =
-                        double.tryParse(_quantityController.text) ?? 0;
-                    final amountPerUnit =
-                        double.tryParse(_amountPerUnitController.text) ?? 0;
-                    final totalAmount = quantity * amountPerUnit;
+                BlocProvider(
+                  create: (context) => TractorsWorkBloc(TractorsWorkService()),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final quantity =
+                          double.tryParse(_quantityController.text) ?? 0;
+                      final amountPerUnit =
+                          double.tryParse(_amountPerUnitController.text) ?? 0;
+                      final totalAmount = quantity * amountPerUnit;
 
-                    final newWork = TractorsWork(
-                      id: work?.id ?? DateTime.now().toString(),
-                      customerId: selectedCustomerId!,
-                      machineType: machineType,
-                      workName: _workNameController.text,
-                      workDate: DateFormat('yyyy-MM-dd').format(selectedDate),
-                      AreaOrQuantity: _quantityController.text,
-                      amountPerUnit: _amountPerUnitController.text,
-                      totalWorkAmount: totalAmount.toStringAsFixed(2),
-                    );
+                      final newWork = TractorsWork(
+                        id: work?.id ?? DateTime.now().toString(),
+                        customerId: selectedCustomerId!,
+                        machineType: machineType,
+                        workName: _workNameController.text,
+                        workDate: DateFormat('yyyy-MM-dd').format(selectedDate),
+                        AreaOrQuantity: _quantityController.text,
+                        amountPerUnit: _amountPerUnitController.text,
+                        totalWorkAmount: totalAmount.toStringAsFixed(2),
+                      );
 
-                    if (work == null) {
-                      context
-                          .read<TractorsWorkBloc>()
-                          .add(AddTractorsWorkEvent(newWork));
-                    } else {
-                      context
-                          .read<TractorsWorkBloc>()
-                          .add(UpdateTractorsWorkEvent(newWork));
-                    }
+                      if (work == null) {
+                        context
+                            .read<TractorsWorkBloc>()
+                            .add(AddTractorsWorkEvent(newWork));
+                      } else {
+                        context
+                            .read<TractorsWorkBloc>()
+                            .add(UpdateTractorsWorkEvent(newWork));
+                      }
 
-                    Navigator.pop(context);
-                  },
-                  child: Text(work == null ? 'Add Work' : 'Update Work'),
+                      Navigator.pop(context);
+                    },
+                    child: Text(work == null ? 'Add Work' : 'Update Work'),
+                  ),
                 ),
               ],
             ),
