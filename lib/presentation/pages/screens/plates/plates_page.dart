@@ -9,6 +9,8 @@ import 'package:terra_shifter/data/models/customer.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_event.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_state.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/widgets/custom_selection_button.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/widgets/custom_text_field.dart';
 
 class PlatesPage extends StatefulWidget {
   @override
@@ -25,17 +27,13 @@ class _PlatesPage extends State<PlatesPage> {
 
   // Controllers to handle the text input fields
   final TextEditingController _customerNameController = TextEditingController();
-  final TextEditingController _contactNumberController =
-      TextEditingController();
+  final TextEditingController _contactNumberController = TextEditingController();
   final TextEditingController _totalDaysController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _amountPerMonthController =
-      TextEditingController();
+  final TextEditingController _amountPerMonthController = TextEditingController();
   final TextEditingController _totalAmountController = TextEditingController();
-  final TextEditingController _receivedAmountController =
-      TextEditingController();
-  final TextEditingController _pendingAmountController =
-      TextEditingController();
+  final TextEditingController _receivedAmountController = TextEditingController();
+  final TextEditingController _pendingAmountController = TextEditingController();
   final TextEditingController _givenDateController = TextEditingController();
   final TextEditingController _receivedDateController = TextEditingController();
   final TextEditingController _searchController = TextEditingController();
@@ -84,52 +82,55 @@ class _PlatesPage extends State<PlatesPage> {
   }
 
   void _showCustomerSelectionDialog() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
-        return AlertDialog(
-          title: Text(
-              AppLocalizations.of(context)?.translate('select_customer') ??
-                  'Select Customer'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  labelText:
-                      AppLocalizations.of(context)?.translate('search') ??
-                          'Search',
-                  prefixIcon: Icon(Icons.search),
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.8,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      decoration:const InputDecoration(
+                        labelText: 'Search',
+                        prefixIcon: Icon(Icons.search),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _filteredCustomers = _customers
+                              .where((customer) =>
+                                  customer.name.toLowerCase().contains(value.toLowerCase()) ||
+                                  customer.contactNumber.contains(value))
+                              .toList();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _filteredCustomers.length,
+                        itemBuilder: (context, index) {
+                          final customer = _filteredCustomers[index];
+                          return ListTile(
+                            title: Text(customer.name),
+                            subtitle: Text(customer.contactNumber),
+                            onTap: () => _onCustomerSelected(customer),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _filteredCustomers = _customers
-                        .where((customer) =>
-                            customer.name
-                                .toLowerCase()
-                                .contains(value.toLowerCase()) ||
-                            customer.contactNumber.contains(value))
-                        .toList();
-                  });
-                },
-              ),
-              SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _filteredCustomers.length,
-                  itemBuilder: (context, index) {
-                    final customer = _filteredCustomers[index];
-                    return ListTile(
-                      title: Text(customer.name),
-                      subtitle: Text(customer.contactNumber),
-                      onTap: () => _onCustomerSelected(customer),
-                    );
-                  },
-                ),
-              ),
-            ],
+              );
+            },
           ),
         );
       },
@@ -146,8 +147,7 @@ class _PlatesPage extends State<PlatesPage> {
     }
   }
 
-  double _calculateTotalAmount(
-      double amountPerMonth, int quantity, int totalDays) {
+  double _calculateTotalAmount(double amountPerMonth, int quantity, int totalDays) {
     // Calculate the total amount based on the amount per month for 100 plates for 30 days
     double amountPerDayPerPlate = amountPerMonth / 30 / 100;
     return amountPerDayPerPlate * quantity * totalDays;
@@ -157,12 +157,10 @@ class _PlatesPage extends State<PlatesPage> {
     if (_amountPerMonthController.text.isNotEmpty &&
         _quantityController.text.isNotEmpty &&
         _totalDaysController.text.isNotEmpty) {
-      final amountPerMonth =
-          double.tryParse(_amountPerMonthController.text) ?? 0.0;
+      final amountPerMonth = double.tryParse(_amountPerMonthController.text) ?? 0.0;
       final quantity = int.tryParse(_quantityController.text) ?? 0;
       final totalDays = int.tryParse(_totalDaysController.text) ?? 0;
-      final totalAmount =
-          _calculateTotalAmount(amountPerMonth, quantity, totalDays);
+      final totalAmount = _calculateTotalAmount(amountPerMonth, quantity, totalDays);
       setState(() {
         _totalAmountController.text = totalAmount.toStringAsFixed(2);
       });
@@ -173,8 +171,7 @@ class _PlatesPage extends State<PlatesPage> {
     if (_totalAmountController.text.isNotEmpty &&
         _receivedAmountController.text.isNotEmpty) {
       final totalAmount = double.tryParse(_totalAmountController.text) ?? 0.0;
-      final receivedAmount =
-          double.tryParse(_receivedAmountController.text) ?? 0.0;
+      final receivedAmount = double.tryParse(_receivedAmountController.text) ?? 0.0;
       final pendingAmount = totalAmount - receivedAmount;
       setState(() {
         _pendingAmountController.text = pendingAmount.toString();
@@ -226,6 +223,15 @@ class _PlatesPage extends State<PlatesPage> {
         pendingAmount: double.parse(_pendingAmountController.text),
       );
       context.read<PlatesBloc>().add(AddPlateEvent(plate));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Plate added successfully'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      _clearControllers();
+      //pop the screen
+      Navigator.of(context).pop();
     }
   }
 
@@ -246,7 +252,17 @@ class _PlatesPage extends State<PlatesPage> {
         receivedAmount: double.parse(_receivedAmountController.text),
         pendingAmount: double.parse(_pendingAmountController.text),
       );
-      context.read<PlatesBloc>().add(UpdatePlateEvent(plate));
+       context.read<PlatesBloc>().add(UpdatePlateEvent(plate));
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Plate updated successfully'),
+          duration: const Duration(seconds: 2),
+        ),
+
+      );
+      _clearControllers();
+      //pop the screen
+      Navigator.of(context).pop();
     }
   }
 
@@ -256,12 +272,10 @@ class _PlatesPage extends State<PlatesPage> {
     final localizations = AppLocalizations.of(context);
 
     return BlocProvider(
-      create: (context) =>
-          PlatesBloc(PlatesService())..add(GetAllPlatesEvent()),
+      create: (context) => PlatesBloc(PlatesService())..add(GetAllPlatesEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-              localizations?.translate('plates_details') ?? 'Plates Details'),
+          title: Text(localizations?.translate('plates_details') ?? 'Plates Details'),
           elevation: 0,
         ),
         body: BlocListener<PlatesBloc, PlatesState>(
@@ -279,79 +293,37 @@ class _PlatesPage extends State<PlatesPage> {
               key: _formKey,
               child: ListView(
                 children: [
-                  // Customer Selection Button
-                  ElevatedButton(
-                    onPressed: _showCustomerSelectionDialog,
-                    child: Text(localizations?.translate('select_customer') ??
-                        'Select Customer'),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Customer Name Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _customerNameController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('customer_name') ??
-                          'Customer Name',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: OutlineInputBorder(),
-                    ),
+                    labelText: localizations?.translate('customer_name') ?? 'Customer Name',
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_customer_name') ??
-                            'Please enter the customer name';
+                        return localizations?.translate('please_enter_customer_name') ?? 'Please enter the customer name';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Contact Number Input
-                  TextFormField(
+                  CustomerSelectionButton(onPressed: _showCustomerSelectionDialog),
+                  const SizedBox(height: 16),
+                  CustomTextField(
                     controller: _contactNumberController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('contact_number') ??
-                          'Contact Number',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.phone, color: theme.primaryColor),
-                    ),
+                    labelText: localizations?.translate('contact_number') ?? 'Contact Number',
+                    prefixIcon: Icon(Icons.phone, color: theme.primaryColor),
                     keyboardType: TextInputType.phone,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_contact_number') ??
-                            'Please enter a contact number';
+                        return localizations?.translate('please_enter_contact_number') ?? 'Please enter a contact number';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Given Date Input (Date Picker)
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('given_date') ??
-                          'Given Date',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: OutlineInputBorder(),
-                      suffixIcon:
-                          Icon(Icons.calendar_today, color: theme.primaryColor),
-                    ),
+                  CustomTextField(
+                    controller: _givenDateController,
+                    labelText: localizations?.translate('given_date') ?? 'Given Date',
                     readOnly: true,
+                    suffixIcon: Icon(Icons.calendar_today, color: theme.primaryColor),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
@@ -366,28 +338,13 @@ class _PlatesPage extends State<PlatesPage> {
                         });
                       }
                     },
-                    controller: TextEditingController(
-                        text: _givenDate == null
-                            ? ''
-                            : _givenDate!.toLocal().toString().split(' ')[0]),
                   ),
                   const SizedBox(height: 16),
-
-                  // Received Date Input (Date Picker)
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('received_date') ??
-                          'Received Date',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: OutlineInputBorder(),
-                      suffixIcon:
-                          Icon(Icons.calendar_today, color: theme.primaryColor),
-                    ),
+                  CustomTextField(
+                    controller: _receivedDateController,
+                    labelText: localizations?.translate('received_date') ?? 'Received Date',
                     readOnly: true,
+                    suffixIcon: Icon(Icons.calendar_today, color: theme.primaryColor),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
                         context: context,
@@ -402,158 +359,73 @@ class _PlatesPage extends State<PlatesPage> {
                         });
                       }
                     },
-                    controller: TextEditingController(
-                        text: _receivedDate == null
-                            ? ''
-                            : _receivedDate!
-                                .toLocal()
-                                .toString()
-                                .split(' ')[0]),
                   ),
                   const SizedBox(height: 16),
-
-                  // Total Days Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _totalDaysController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('total_days') ??
-                          'Total Days',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                    labelText: localizations?.translate('total_days') ?? 'Total Days',
                     readOnly: true,
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
-
-                  // Quantity Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _quantityController,
-                    decoration: InputDecoration(
-                      labelText:
-                          localizations?.translate('quantity') ?? 'Quantity',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
+                    labelText: localizations?.translate('quantity') ?? 'Quantity',
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_quantity') ??
-                            'Please enter the quantity';
+                        return localizations?.translate('please_enter_quantity') ?? 'Please enter the quantity';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Amount Per Month Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _amountPerMonthController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('amount_per_month') ??
-                          'Amount Per Month',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
+                    labelText: localizations?.translate('amount_per_month') ?? 'Amount Per Month',
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_amount_per_month') ??
-                            'Please enter the amount per month';
+                        return localizations?.translate('please_enter_amount_per_month') ?? 'Please enter the amount per month';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Total Amount Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _totalAmountController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('total_amount') ??
-                          'Total Amount',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
-                    keyboardType: TextInputType.number,
+                    labelText: localizations?.translate('total_amount') ?? 'Total Amount',
                     readOnly: true,
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
-
-                  // Received Amount Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _receivedAmountController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('received_amount') ??
-                          'Received Amount',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
+                    labelText: localizations?.translate('received_amount') ?? 'Received Amount',
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_received_amount') ??
-                            'Please enter the received amount';
+                        return localizations?.translate('please_enter_received_amount') ?? 'Please enter the received amount';
                       }
                       return null;
                     },
                     onChanged: (value) {
-                      // Call _updatePendingAmount whenever the received amount changes
                       _updatePendingAmount();
                     },
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Pending Amount Input
-                  TextFormField(
+                  CustomTextField(
                     controller: _pendingAmountController,
-                    decoration: InputDecoration(
-                      labelText: localizations?.translate('pending_amount') ??
-                          'Pending Amount',
-                      labelStyle: TextStyle(color: theme.primaryColor),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: theme.primaryColor, width: 2),
-                      ),
-                      border: const OutlineInputBorder(),
-                    ),
+                    labelText: localizations?.translate('pending_amount') ?? 'Pending Amount',
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return localizations
-                                ?.translate('please_enter_pending_amount') ??
-                            'Please enter the pending amount';
+                        return localizations?.translate('please_enter_pending_amount') ?? 'Please enter the pending amount';
                       }
                       return null;
                     },
                   ),
                   const SizedBox(height: 30),
-
-                  // Save and Edit Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -564,25 +436,21 @@ class _PlatesPage extends State<PlatesPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         ),
-                        child: Text(localizations?.translate('save') ?? 'Save',
-                            style: const TextStyle(fontSize: 16)),
+                        child: Text(localizations?.translate('save') ?? 'Save', style: TextStyle(fontSize: 16, color: theme.cardColor)),
                       ),
                       ElevatedButton(
                         onPressed: () => _editData(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orangeAccent,
+                          backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
+                            side: BorderSide(color: theme.primaryColor),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
                         ),
-                        child: Text(
-                            localizations?.translate('update') ?? 'Update',
-                            style: const TextStyle(fontSize: 16)),
+                        child: Text(localizations?.translate('update') ?? 'Update', style: TextStyle(fontSize: 16, color: theme.primaryColor)),
                       ),
                     ],
                   ),
@@ -593,5 +461,19 @@ class _PlatesPage extends State<PlatesPage> {
         ),
       ),
     );
+  }
+  
+  void _clearControllers() {
+    _customerNameController.clear();
+    _contactNumberController.clear();
+    _givenDateController.clear();
+    _receivedDateController.clear();
+    _totalDaysController.clear();
+    _quantityController.clear();
+    _amountPerMonthController.clear();
+    _totalAmountController.clear();
+    _receivedAmountController.clear();
+    _pendingAmountController.clear();
+    _searchController.clear();
   }
 }

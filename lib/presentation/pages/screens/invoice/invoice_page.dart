@@ -46,7 +46,7 @@ class _InvoicePage extends State<InvoicePage> {
     final pdf = pw.Document();
 
     // Load the background image
-    final ByteData bytes = await rootBundle.load('assets/images/invoice_second_bg.png');
+    final ByteData bytes = await rootBundle.load('assets/images/invoice_first_bg.png');
     final Uint8List backgroundImage = bytes.buffer.asUint8List();
 
     // Fetch customer and plates details
@@ -119,8 +119,18 @@ class _InvoicePage extends State<InvoicePage> {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      pw.Text("Aakash Hajare: $companyContact"),
-                      pw.Text("Rahul Hajare: +91 9970662978"),
+                      pw.Row(
+                        children: [
+                          pw.Text("Aakash Hajare: ",style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text("$companyContact"),
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Text("Kishor Hajare: ",style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text("+91 9767745631"),
+                        ]
+                      )
                     ],
                   ),
                   pw.Divider(),
@@ -128,11 +138,31 @@ class _InvoicePage extends State<InvoicePage> {
                   pw.Row(
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
-                      pw.Text("Customer Name: $customerName"),
-                      pw.Text("Contact: $customerContact"),
+                      pw.Row(
+                        children: [
+                          pw.Text("Customer Name: ",style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text("$customerName"),
+                        ]
+                      ),
+                      pw.Row(
+                        children: [
+                          pw.Text("Contact Number: ",style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text("$customerContact"),
+                        ]
+                      )
                     ],
                   ),
-                  pw.Text("Address: $customerAddress"),
+                  pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Row(
+                        children: [
+                          pw.Text("Address: ",style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                          pw.Text("$customerAddress"),
+                        ]
+                      ),
+                    ],
+                  ),
                   pw.SizedBox(height:50),
 
                   // Invoice Details
@@ -176,7 +206,8 @@ class _InvoicePage extends State<InvoicePage> {
                       ],
                     ),
                   ),
-                  pw.SizedBox(height: 40),
+                  pw.SizedBox(height: 100),
+
 
                   // Spacer to push content to the bottom
                   pw.Spacer(),

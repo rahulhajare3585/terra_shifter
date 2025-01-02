@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ThemeConfig {
   // Light Theme
   static const Color customGreen = Color(0xFF11422D);
-  static  ThemeData selectedTheme = lightTheme;
+  static  ThemeData selectedTheme = blueTheme;
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: customGreen,
@@ -90,14 +90,14 @@ class ThemeConfig {
   );
   
 // orange theme 
-static const Color customOrange = Color.fromARGB(255, 66, 47, 17);
-  static final ThemeData orangeTheme = ThemeData(
+static const Color CustomMaroon = Color.fromARGB(255, 66, 27, 17);
+  static final ThemeData maroonTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: customOrange,
-    indicatorColor: customOrange,
+    primaryColor: CustomMaroon,
+    indicatorColor: CustomMaroon,
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
-      color: customOrange,
+      color: CustomMaroon,
       elevation: 0,
       titleTextStyle: TextStyle(
         color: Colors.white,
@@ -117,13 +117,59 @@ static const Color customOrange = Color.fromARGB(255, 66, 47, 17);
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: customOrange),
+        borderSide: const BorderSide(color: CustomMaroon),
       ),
-      labelStyle: const TextStyle(color: customOrange),
+      labelStyle: const TextStyle(color: CustomMaroon),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
   style: ElevatedButton.styleFrom(
-    backgroundColor: customOrange,
+    backgroundColor: CustomMaroon,
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    textStyle: const TextStyle(
+      fontSize: 16, 
+      fontWeight: FontWeight.bold, 
+      color: Colors.white, // Text color
+    ),
+    iconColor: Colors.white, // Icon color
+  ),
+),  
+  );
+
+  // orange theme 
+static const Color customBlue = Color.fromARGB(255, 38, 17, 66);
+  static final ThemeData blueTheme = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: customBlue,
+    indicatorColor: customBlue,
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(
+      color: customBlue,
+      elevation: 0,
+      titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+      iconTheme: IconThemeData(color: Colors.white),
+    ),
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: Colors.black, fontSize: 16),
+      bodyMedium: TextStyle(color: Colors.black, fontSize: 14,),
+      bodySmall: TextStyle(color: Colors.white, fontSize: 12),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: customBlue),
+      ),
+      labelStyle: const TextStyle(color: customBlue),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+  style: ElevatedButton.styleFrom(
+    backgroundColor: customBlue,
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     textStyle: const TextStyle(
       fontSize: 16, 

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:terra_shifter/data/Services/plates_manage_service.dart';
 import 'package:terra_shifter/data/Services/plates_service.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_event.dart';
 import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_state.dart';
+import 'package:terra_shifter/presentation/blocs/plates_manage/plates_manage_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/Manager/plates_manage_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/plates/plates_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/invoice/invoice_page.dart';
 
@@ -27,6 +30,24 @@ class _PlatesDetailsPage extends State<PlatesDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plates Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.manage_history),
+            tooltip: 'Manage Details', // Tooltip when hovered or long-pressed
+            onPressed: () {
+              // Navigate to manage details page or perform desired action
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BlocProvider(
+                    create: (context) => PlatesManageBloc(PlatesManageService()),
+                    child: PlatesManagePage(),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<PlateDetailsBloc, PlateDetailsState>(
         builder: (context, state) {
@@ -43,15 +64,22 @@ class _PlatesDetailsPage extends State<PlatesDetailsPage> {
             );
           } else if (state is PlatesLoaded) {
             final plates = state.plates;
+            final theme = Theme.of(context);
             if (plates.isEmpty) {
               return Center(
-                child: Lottie.asset(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 0,
+                  children: [
+                    Lottie.asset(
                   'assets/lottie/no_data.json',
                   decoder: LottieComposition.decodeGZip,
                 ),
+                    Text('No data found.' , style: TextStyle(fontSize: 20,color: theme.primaryColor),),
+                  ],
+                )
               );
             }
-            final theme = Theme.of(context);
             return ListView.builder(
               itemCount: plates.length + 1, // Add one for the extra space
               itemBuilder: (context, index) {

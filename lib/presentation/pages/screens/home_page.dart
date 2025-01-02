@@ -3,8 +3,11 @@ import 'package:fl_chart/fl_chart.dart'; // For pie chart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:terra_shifter/core/usecases/app_localization.dart';
 import 'package:terra_shifter/data/Services/plates_service.dart';
+import 'package:terra_shifter/data/Services/tractor_work_service.dart';
 import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_bloc.dart';
+import 'package:terra_shifter/presentation/blocs/tractor/tractor_work_bloc.dart';
 import 'package:terra_shifter/presentation/pages/screens/plates/plates_details_page.dart';
+import 'package:terra_shifter/presentation/pages/tractors/tractors_work_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,7 +51,8 @@ class _HomePage extends State<HomePage> {
                       ),
                       PieChartSectionData(
                         value: receivedAmount,
-                        title: localizations?.translate('received') ?? 'Received',
+                        title:
+                            localizations?.translate('received') ?? 'Received',
                         color: Colors.green,
                         radius: 50,
                         titleStyle: const TextStyle(
@@ -57,7 +61,8 @@ class _HomePage extends State<HomePage> {
                       ),
                       PieChartSectionData(
                         value: totalAmount - (spentAmount + receivedAmount),
-                        title: localizations?.translate('remaining') ?? 'Remaining',
+                        title: localizations?.translate('remaining') ??
+                            'Remaining',
                         color: Colors.blue,
                         radius: 50,
                         titleStyle: const TextStyle(
@@ -112,32 +117,46 @@ class _HomePage extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                              create: (context) => PlateDetailsBloc(PlatesService()),
+                              create: (context) =>
+                                  PlateDetailsBloc(PlatesService()),
                               child: PlatesDetailsPage(),
                             )));
               },
               tooltip: localizations?.translate('plates') ?? 'Plates',
-              child: Image.asset('assets/images/plate.png', width: 50, height: 50),
+              child:
+                  Image.asset('assets/images/plate.png', width: 50, height: 50),
             ),
             const SizedBox(width: 16),
             FloatingActionButton(
               heroTag: 'tractor', // Unique hero tag
               backgroundColor: Colors.white,
               onPressed: () {
-                // Add your functionality here
+                // Added temporary navigation to plates details page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) =>
+                          TractorsWorkBloc(TractorsWorkService()),
+                      child: TractorsWorkPage(),
+                    ),
+                  ),
+                );
               },
               tooltip: localizations?.translate('tractor') ?? 'Tractor',
-              child: Image.asset('assets/images/power_tiller.png', width: 50, height: 50),
+              child: Image.asset('assets/images/tractor.png',
+                  width: 50, height: 50),
             ),
             const SizedBox(width: 16),
             FloatingActionButton(
-              heroTag: 'power_tillers', // Unique hero tag
+              heroTag: 'jcb', // Unique hero tag
               backgroundColor: Colors.white,
               onPressed: () {
                 // Add your functionality here
               },
-              tooltip: localizations?.translate('power_tillers') ?? 'Power Tillers',
-              child: Image.asset('assets/images/tractor.png', width: 50, height: 50),
+              tooltip: localizations?.translate('jcb') ?? 'JCB',
+              child: Image.asset('assets/images/tractor.png',
+                  width: 50, height: 50),
             ),
           ],
         ),
