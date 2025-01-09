@@ -7,9 +7,9 @@ import 'package:terra_shifter/core/usecases/app_localization.dart';
 import 'package:terra_shifter/data/Services/plates_service.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_bloc.dart';
-import 'package:terra_shifter/presentation/pages/screens/customer_page.dart';
+import 'package:terra_shifter/presentation/pages/screens/customers/customer_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/home_page.dart';
-import 'package:terra_shifter/presentation/pages/screens/plates_page.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/plates_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/setting_page.dart';
 
 class LandingPage extends StatefulWidget {

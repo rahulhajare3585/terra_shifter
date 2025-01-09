@@ -89,4 +89,20 @@ class PlatesService {
       return [];
     }
   }
+
+  // Fetch plates by customerId
+  Future<List<Plates>> getPlatesByCustomerId(String customerId) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('plates')
+          .where('customerId', isEqualTo: customerId)
+          .get();
+      return querySnapshot.docs
+          .map((doc) => Plates.fromMap(doc.data()))
+          .toList();
+    } catch (e) {
+      print("Error fetching plates by customerId: $e");
+      return [];
+    }
+  }
 }

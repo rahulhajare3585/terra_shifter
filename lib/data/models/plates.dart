@@ -1,5 +1,6 @@
 class Plates {
   final String id;
+  final String customerId;
   final String customerName;
   final String contactNumber;
   final DateTime givenDate;
@@ -8,11 +9,12 @@ class Plates {
   final int quantity;
   final double amountPerMonth;
   final double totalAmount;
-  final double receivedAmount;
-  final double pendingAmount;
+  double? receivedAmount;
+  double? pendingAmount;
 
   Plates({
     required this.id,
+    required this.customerId,
     required this.customerName,
     required this.contactNumber,
     required this.givenDate,
@@ -21,13 +23,14 @@ class Plates {
     required this.quantity,
     required this.amountPerMonth,
     required this.totalAmount,
-    required this.receivedAmount,
-    required this.pendingAmount,
+    this.receivedAmount,
+    this.pendingAmount,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'customerId': customerId,
       'customerName': customerName,
       'contactNumber': contactNumber,
       'givenDate': givenDate.toIso8601String(),
@@ -44,6 +47,7 @@ class Plates {
   factory Plates.fromMap(Map<String, dynamic> map) {
     return Plates(
       id: map['id'],
+      customerId: map['customerId'],
       customerName: map['customerName'],
       contactNumber: map['contactNumber'],
       givenDate: DateTime.parse(map['givenDate']),

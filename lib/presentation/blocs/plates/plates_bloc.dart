@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:terra_shifter/data/Services/plates_service.dart';
-import 'package:terra_shifter/data/models/plates.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_event.dart';
 import 'package:terra_shifter/presentation/blocs/plates/plates_state.dart';
 
