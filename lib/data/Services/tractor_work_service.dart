@@ -104,4 +104,19 @@ class TractorsWorkService {
       return [];
     }
   }
+
+  // Read or fetch a customer by id
+  Future<Customer?> getCustomer(String id) async {
+    try {
+      final docSnapshot =
+          await _firestore.collection('customers').doc(id).get();
+      if (docSnapshot.exists) {
+        return Customer.fromMap(docSnapshot.data()!);
+      }
+      return null;
+    } catch (e) {
+      print("Error fetching customer: $e");
+      return null;
+    }
+  }
 }

@@ -5,8 +5,10 @@ class TractorsWork {
   final String workName;
   final String workDate;
   final String AreaOrQuantity;
+  final String measurementUnit;
   final String amountPerUnit;
   final String totalWorkAmount;
+  final String receivedAmount;
 
   TractorsWork({
     required this.id,
@@ -15,8 +17,10 @@ class TractorsWork {
     required this.workName,
     required this.workDate,
     required this.AreaOrQuantity,
+    required this.measurementUnit,
     required this.amountPerUnit,
     required this.totalWorkAmount,
+    required this.receivedAmount,
   });
 
   factory TractorsWork.fromJson(Map<String, dynamic> json) {
@@ -27,8 +31,10 @@ class TractorsWork {
       workName: json['workName'],
       workDate: json['workDate'],
       AreaOrQuantity: json['AreaOrQuantity'],
+      measurementUnit: json['measurementUnit'],
       amountPerUnit: json['amountPerUnit'],
       totalWorkAmount: json['totalWorkAmount'],
+      receivedAmount: json['receivedAmount'],
     );
   }
 
@@ -40,8 +46,10 @@ class TractorsWork {
       'workName': workName,
       'workDate': workDate,
       'AreaOrQuantity': AreaOrQuantity,
+      'measurementUnit': measurementUnit,
       'amountPerUnit': amountPerUnit,
       'totalWorkAmount': totalWorkAmount,
+      'receivedAmount': receivedAmount,
     };
   }
 }

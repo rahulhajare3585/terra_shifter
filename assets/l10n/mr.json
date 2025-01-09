@@ -72,5 +72,9 @@
   "summary": "सारांश",
   "authorized_signature": "अधिकृत स्वाक्षरी",
   "summary_message": "नमस्कार {customerName}, आम्हाला रु.{receivedAmount} प्राप्त झाले आहेत रु.{totalAmount} पैकी. तुमची प्रलंबित रक्कम रु.{pendingAmount} आहे.",
-  "stay_connected": "कृपया आमच्याशी संपर्कात रहा."
+  "stay_connected": "कृपया आमच्याशी संपर्कात रहा.",
+  "please_select_work": "कृपया प्रथम काम निवडा",
+  "machine_type": "यंत्राचा प्रकार",
+  "amount_per_unit": "प्रति युनिट रक्कम",
+  "no_tractor_works_found": "या ग्राहकासाठी कोणतेही ट्रॅक्टर कामे आढळली नाहीत."
 }

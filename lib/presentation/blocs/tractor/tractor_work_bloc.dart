@@ -86,5 +86,31 @@ class TractorsWorkBloc extends Bloc<TractorsWorkEvent, TractorsWorkState> {
         emit(CustomerError("Failed to fetch customers: ${e.toString()}"));
       }
     });
+
+    on<GetCustomerEvent>((event, emit) async {
+      emit(CustomerLoading());
+      try {
+        final customer = await tractorsWorkService.getCustomer(event.id);
+        if (customer != null) {
+          emit(CustomerLoaded([customer]));
+        } else {
+          emit(CustomerError("Customer not found"));
+        }
+      } catch (e) {
+        emit(CustomerError("Failed to fetch customer: ${e.toString()}"));
+      }
+    });
+
+    // Load all tractor works and customers during initialization
+    on<InitializeTractorsWorkPageEvent>((event, emit) async {
+      emit(TractorsWorkLoading());
+      try {
+        final tractorsWorks = await tractorsWorkService.getAllTractorWorks();
+        final customers = await tractorsWorkService.getAllCustomers();
+        emit(TractorsWorkAndCustomersLoaded(tractorsWorks, customers));
+      } catch (e) {
+        emit(TractorsWorkError("Failed to initialize page: ${e.toString()}"));
+      }
+    });
   }
 }

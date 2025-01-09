@@ -8,14 +8,6 @@ abstract class TractorsWorkEvent extends Equatable {
   List<Object> get props => [];
 }
 
-
-class GetTractorsWorkByCustomerIdEvent extends TractorsWorkEvent {
-  final String customerId;
-  const GetTractorsWorkByCustomerIdEvent(this.customerId);
-  @override
-  List<Object> get props => [customerId];
-}
-
 class AddTractorsWorkEvent extends TractorsWorkEvent {
   final TractorsWork tractorsWork;
 
@@ -45,7 +37,14 @@ class UpdateTractorsWorkEvent extends TractorsWorkEvent {
   List<Object> get props => [tractorsWork];
 }
 
-class GetAllCustomersEvent extends TractorsWorkEvent {}
+class GetTractorsWorkByCustomerIdEvent extends TractorsWorkEvent {
+  final String customerId;
+
+  const GetTractorsWorkByCustomerIdEvent(this.customerId);
+
+  @override
+  List<Object> get props => [customerId];
+}
 
 class DeleteTractorsWorkEvent extends TractorsWorkEvent {
   final String id;
@@ -55,3 +54,17 @@ class DeleteTractorsWorkEvent extends TractorsWorkEvent {
   @override
   List<Object> get props => [id];
 }
+
+class GetAllCustomersEvent extends TractorsWorkEvent {}
+
+class GetCustomerEvent extends TractorsWorkEvent {
+  final String id;
+
+  const GetCustomerEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+// Define InitializeTractorsWorkPageEvent
+class InitializeTractorsWorkPageEvent extends TractorsWorkEvent {}

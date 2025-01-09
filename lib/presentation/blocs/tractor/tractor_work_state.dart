@@ -16,6 +16,7 @@ class CustomerLoaded extends TractorsWorkState {
 
   CustomerLoaded(this.customers);
 }
+
 class TractorsWorkInitial extends TractorsWorkState {}
 
 class TractorsWorkLoading extends TractorsWorkState {}
@@ -51,4 +52,15 @@ class CustomerError extends TractorsWorkState {
   final String error;
 
   CustomerError(this.error);
+}
+
+// Define TractorsWorkAndCustomersLoaded state
+class TractorsWorkAndCustomersLoaded extends TractorsWorkState {
+  final List<TractorsWork> tractorsWorks;
+  final List<Customer> customers;
+
+  const TractorsWorkAndCustomersLoaded(this.tractorsWorks, this.customers);
+
+  @override
+  List<Object> get props => [tractorsWorks, customers];
 }

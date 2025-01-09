@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:terra_shifter/data/Services/fuel_consumption_service.dart';
-import 'package:terra_shifter/data/models/fuel_consumption.dart';
 import 'package:terra_shifter/presentation/blocs/fuel/fuel_consumption_event.dart';
 import 'package:terra_shifter/presentation/blocs/fuel/fuel_consumption_state.dart';
 

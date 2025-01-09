@@ -72,5 +72,9 @@
   "summary": "Summary",
   "authorized_signature": "Authorized Signature",
   "summary_message": "Hello {customerName}, we received an amount of Rs.{receivedAmount} from Rs.{totalAmount}. Your pending amount is Rs.{pendingAmount}.",
-  "stay_connected": "Please stay connected with us."
+  "stay_connected": "Please stay connected with us.",
+  "please_select_work": "Please select the work first",
+  "machine_type": "Machine Type",
+  "amount_per_unit": "Amount Per Unit",
+  "no_tractor_works_found": "No tractor works found for this customer."
 }
