@@ -1,11 +1,10 @@
-
-import 'package:terra_shifter/data/models/plates.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/model/plates.dart';
 
 abstract class PlatesState {
   const PlatesState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class PlatesInitial extends PlatesState {}
@@ -13,12 +12,12 @@ class PlatesInitial extends PlatesState {}
 class PlatesLoading extends PlatesState {}
 
 class PlatesLoaded extends PlatesState {
-  final List<Plates> plates;
+  final List<PlatesModel> plates;
 
   const PlatesLoaded(this.plates);
 
   @override
-  List<Object?> get props => [plates];
+  List<Object> get props => [plates];
 }
 
 class PlatesOperationSuccess extends PlatesState {
@@ -27,7 +26,7 @@ class PlatesOperationSuccess extends PlatesState {
   const PlatesOperationSuccess(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
 }
 
 class PlatesError extends PlatesState {
@@ -36,5 +35,5 @@ class PlatesError extends PlatesState {
   const PlatesError(this.error);
 
   @override
-  List<Object?> get props => [error];
+  List<Object> get props => [error];
 }

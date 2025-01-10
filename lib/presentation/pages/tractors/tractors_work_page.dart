@@ -21,6 +21,7 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
   String machineType = 'Power Tiller';
   String measurementUnit = 'Acer';
   String workName = 'Shifting (Tailor)';
+  String buttonText = "Save";
   List<TractorsWork> works = [];
   List<Customer> customers = [];
   bool isFormVisible = false;
@@ -62,8 +63,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
           .name;
       machineType = work.machineType;
       _machineTypeController.text = machineType;
+      _amountReceivedController.text = work.receivedAmount;
       totalAmount = double.tryParse(work.totalWorkAmount) ?? 0;
       isFormVisible = true;
+      buttonText = 'Update';
     });
   }
 
@@ -109,13 +112,24 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
       receivedAmount: _amountReceivedController.text,
     );
 
-    if (work == null) {
+    if (buttonText == "Save") {
       context.read<TractorsWorkBloc>().add(AddTractorsWorkEvent(newWork));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Customer added successfully!")),
+      );
     } else {
       context.read<TractorsWorkBloc>().add(UpdateTractorsWorkEvent(newWork));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Customer updated successfully!")),
+      );
+      buttonText = "Save";
     }
 
-    _resetFields();
+    setState(() {
+      _resetFields();
+    _toggleFormVisibility();
+    context.read<TractorsWorkBloc>().add(InitializeTractorsWorkPageEvent());
+    });
   }
 
   void _showMachineTypeSelectionSheet() {
@@ -279,16 +293,16 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                           TextField(
                             controller: _amountPerUnitController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(labelText: 'Amount Per Unit'),
+                            decoration: const InputDecoration(
+                                labelText: 'Amount Per Unit'),
                             onChanged: (value) => _calculateTotal(),
                           ),
                           const SizedBox(height: 16),
                           TextField(
                             controller: _amountReceivedController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                const InputDecoration(labelText: 'Received amount'),
+                            decoration: const InputDecoration(
+                                labelText: 'Received amount'),
                             onChanged: (value) => _calculateTotal(),
                           ),
                           const SizedBox(height: 16),
@@ -299,7 +313,8 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                   style: TextStyle(fontSize: 16)),
                               Text('\₹${totalAmount.toStringAsFixed(2)}',
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -310,7 +325,7 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                               ElevatedButton.icon(
                                 onPressed: () => _saveWork(null),
                                 icon: const Icon(Icons.save),
-                                label: const Text('Save'),
+                                label: Text(buttonText),
                               ),
                               ElevatedButton.icon(
                                 onPressed: _resetFields,
@@ -420,9 +435,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    
-                                   const Text('Machine Type :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Machine Type :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       work.machineType,
@@ -432,8 +448,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 ),
                                 Row(
                                   children: [
-                                   const Text('Total work units :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Total work units :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       '${work.AreaOrQuantity} ${work.measurementUnit}',
@@ -443,9 +461,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 ),
                                 Row(
                                   children: [
-                                    
-                                   const Text('Amount :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Amount :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       ' ${work.amountPerUnit} / ${work.measurementUnit}',
@@ -455,8 +474,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 ),
                                 Row(
                                   children: [
-                                   const Text('Total Amount :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Total Amount :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       '₹ ${work.totalWorkAmount}',
@@ -466,8 +487,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 ),
                                 Row(
                                   children: [
-                                   const Text('Received Amount :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Received Amount :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       '₹ ${work.receivedAmount}',
@@ -477,8 +500,10 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                 ),
                                 Row(
                                   children: [
-                                   const Text('Pending Amount :',
-                                        style:  TextStyle(fontSize: 14,fontWeight: FontWeight.bold)),
+                                    const Text('Pending Amount :',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 8),
                                     Text(
                                       '₹ ${(double.tryParse(work.totalWorkAmount) ?? 0) - (double.tryParse(work.receivedAmount) ?? 0)}',
@@ -495,10 +520,19 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
                                               Theme.of(context).primaryColor),
                                       onPressed: () {
                                         // Navigate to invoice page
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => BlocProvider(
-                                          create: (context) => TractorInvoiceBloc(TractorInvoicePageService()),
-                                          child: TractorInvoicePage(customerId: work.customerId.toString()),
-                                        )));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BlocProvider(
+                                                      create: (context) =>
+                                                          TractorInvoiceBloc(
+                                                              TractorInvoicePageService()),
+                                                      child: TractorInvoicePage(
+                                                          customerId: work
+                                                              .customerId
+                                                              .toString()),
+                                                    )));
                                       },
                                     ),
                                     IconButton(

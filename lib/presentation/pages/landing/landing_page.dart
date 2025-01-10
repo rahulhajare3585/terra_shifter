@@ -4,12 +4,12 @@ import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:motion_tab_bar/MotionTabBarController.dart';
 import 'package:terra_shifter/data/Services/customer_service.dart';
 import 'package:terra_shifter/core/usecases/app_localization.dart';
-import 'package:terra_shifter/data/Services/plates_service.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/bloc/plates_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/service/plates_service.dart';
 import 'package:terra_shifter/presentation/blocs/customer/customer_bloc.dart';
-import 'package:terra_shifter/presentation/blocs/plates/plates_bloc.dart';
 import 'package:terra_shifter/presentation/pages/screens/customers/customer_page.dart';
 import 'package:terra_shifter/presentation/pages/screens/home_page.dart';
-import 'package:terra_shifter/presentation/pages/screens/plates/plates_page.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/widgets/plates_details_screen.dart';
 import 'package:terra_shifter/presentation/pages/screens/setting_page.dart';
 
 class LandingPage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _LandingPage extends State<LandingPage> with TickerProviderStateMixin {
           MaterialPageRoute(
             builder: (context) => BlocProvider(
               create: (context) => PlatesBloc(PlatesService()),
-              child: PlatesPage(),
+              child: PlatesDetailsScreen(),
             ),
           ),
         );

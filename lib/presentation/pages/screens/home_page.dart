@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart'; // For pie chart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:terra_shifter/core/usecases/app_localization.dart';
-import 'package:terra_shifter/data/Services/plates_service.dart';
+import 'package:terra_shifter/data/Services/fuel_consumption_service.dart';
+import 'package:terra_shifter/presentation/blocs/fuel/fuel_consumption_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/fuel/fuel_consuption_screen.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/bloc/plates_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/service/plates_service.dart';
 import 'package:terra_shifter/data/Services/tractor_work_service.dart';
-import 'package:terra_shifter/presentation/blocs/plates_details/plate_details_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/tractor/tractor_work_bloc.dart';
-import 'package:terra_shifter/presentation/pages/screens/plates/plates_details_page.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/bloc/jcb_work_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/jcb_work_screen.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/service/jcb_work_service.dart';
+import 'package:terra_shifter/presentation/pages/screens/plates/widgets/plates_details_screen.dart';
 import 'package:terra_shifter/presentation/pages/tractors/tractors_work_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -117,9 +123,8 @@ class _HomePage extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => BlocProvider(
-                              create: (context) =>
-                                  PlateDetailsBloc(PlatesService()),
-                              child: PlatesDetailsPage(),
+                              create: (context) => PlatesBloc(PlatesService()),
+                              child: PlatesDetailsScreen(),
                             )));
               },
               tooltip: localizations?.translate('plates') ?? 'Plates',
@@ -153,10 +158,39 @@ class _HomePage extends State<HomePage> {
               backgroundColor: Colors.white,
               onPressed: () {
                 // Add your functionality here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => JcbWorkBloc(JcbWorkService()),
+                      child: JcbWorkScreen(),
+                    ),
+                  ),
+                );
               },
-              tooltip: localizations?.translate('jcb') ?? 'JCB',
-              child: Image.asset('assets/images/tractor.png',
-                  width: 50, height: 50),
+              tooltip: localizations?.translate('fuel') ?? 'Fuel',
+              child:
+                  Image.asset('assets/images/jcb.png', width: 50, height: 50),
+            ),
+            const SizedBox(width: 16),
+            FloatingActionButton(
+              heroTag: 'fuel', // Unique hero tag
+              backgroundColor: Colors.white,
+              onPressed: () {
+                // Add your functionality here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => FuelConsumptionBloc(FuelConsumptionService()),
+                      child: FuelConsumptionScreen(),
+                    ),
+                  ),
+                );
+              },
+              tooltip: localizations?.translate('fuel') ?? 'FUel',
+              child:
+                  Image.asset('assets/images/fuel.png', width: 50, height: 50),
             ),
           ],
         ),
