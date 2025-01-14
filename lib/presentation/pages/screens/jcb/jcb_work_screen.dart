@@ -15,13 +15,16 @@ class JcbWorkScreen extends StatefulWidget {
 class _JcbWorkScreenState extends State<JcbWorkScreen> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController workNameController = TextEditingController();
-  final TextEditingController workDescriptionController = TextEditingController();
+  final TextEditingController workDescriptionController =
+      TextEditingController();
   final TextEditingController lastUnitController = TextEditingController();
   final TextEditingController currentUnitController = TextEditingController();
   final TextEditingController workHoursController = TextEditingController();
   final TextEditingController workAmountController = TextEditingController();
-  final TextEditingController totalWorkAmountController = TextEditingController();
-  final TextEditingController receivedAmountController = TextEditingController();
+  final TextEditingController totalWorkAmountController =
+      TextEditingController();
+  final TextEditingController receivedAmountController =
+      TextEditingController();
 
   String? selectedCustomerName;
   String? selectedCustomerId;
@@ -42,7 +45,8 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
   }
 
   void _populateJcbWorkDetails(JcbWork jcbWork) {
-    final customer = customers.firstWhere((customer) => customer.id == jcbWork.customerId);
+    final customer =
+        customers.firstWhere((customer) => customer.id == jcbWork.customerId);
     setState(() {
       jcbWorkData = jcbWork;
       workNameController.text = jcbWork.WorkName;
@@ -63,10 +67,21 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
   void _toggleForm() {
     setState(() {
       isAddingJcbWork = !isAddingJcbWork;
+      _initializeLastUnit();
       if (!isAddingJcbWork) {
         _clearForm();
       }
     });
+  }
+
+  void _initializeLastUnit() {
+    final blocState = context.read<JcbWorkBloc>().state;
+    if (blocState is JcbWorkLoaded && blocState.jcbWorks.isNotEmpty) {
+      final lastWork = blocState.jcbWorks.last;
+      lastUnitController.text = lastWork.CurrentUnit;
+    } else {
+      lastUnitController.text = '0';
+    }
   }
 
   void _showCustomerSelectionSheet() {
@@ -105,15 +120,20 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 5),
-                if (selectedCustomerName != null && selectedCustomerAddress != null)
+                if (selectedCustomerName != null &&
+                    selectedCustomerAddress != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Customer Name: $selectedCustomerName', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text('Customer ID: $selectedCustomerId', style: TextStyle(fontSize: 16)),
-                        Text('Customer Address: $selectedCustomerAddress', style: TextStyle(fontSize: 16)),
+                        Text('Customer Name: $selectedCustomerName',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text('Customer ID: $selectedCustomerId',
+                            style: TextStyle(fontSize: 16)),
+                        Text('Customer Address: $selectedCustomerAddress',
+                            style: TextStyle(fontSize: 16)),
                       ],
                     ),
                   ),
@@ -148,12 +168,13 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                       } else if (state is JcbWorkLoaded) {
                         final nextId = state.jcbWorks.isNotEmpty
                             ? (state.jcbWorks.map((c) {
-                                try {
-                                  return int.parse(c.id);
-                                } catch (e) {
-                                  return 0;
-                                }
-                              }).reduce((a, b) => a > b ? a : b) + 1)
+                                      try {
+                                        return int.parse(c.id);
+                                      } catch (e) {
+                                        return 0;
+                                      }
+                                    }).reduce((a, b) => a > b ? a : b) +
+                                    1)
                                 .toString()
                             : '1';
                         idController.text = nextId;
@@ -163,7 +184,11 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: state.jcbWorks.length,
                           itemBuilder: (context, index) {
-                            final jcbWork = state.jcbWorks[index];
+                            final sortedJcbWorks =
+                                List<JcbWork>.from(state.jcbWorks)
+                                  ..sort((a, b) => DateTime.parse(b.WorkDate)
+                                      .compareTo(DateTime.parse(a.WorkDate)));
+                            final jcbWork = sortedJcbWorks[index];
                             return _buildJcbWorkCard(jcbWork);
                           },
                         );
@@ -272,6 +297,15 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  onChanged: (value) => setState(() {
+                    final lastUnit =
+                        double.tryParse(lastUnitController.text) ?? 0;
+                    final currentUnit =
+                        double.tryParse(currentUnitController.text) ?? 0;
+                    //total work hour should be current unit - last unit =6 then 1 hour work
+                    final totalWorkHour = (currentUnit - lastUnit) / 6;
+                    workHoursController.text = totalWorkHour.toStringAsFixed(2);
+                  }),
                   controller: currentUnitController,
                   decoration: InputDecoration(
                     labelText: "Current Unit",
@@ -294,6 +328,15 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  onChanged: (value) => setState(() {
+                    final workHours =
+                        double.tryParse(workHoursController.text) ?? 0;
+                    final workAmount =
+                        double.tryParse(workAmountController.text) ?? 0;
+                    final totalWorkAmount = workAmount * workHours;
+                    totalWorkAmountController.text =
+                        totalWorkAmount.toStringAsFixed(2);
+                  }),
                   controller: workAmountController,
                   decoration: InputDecoration(
                     labelText: "Work Amount",
@@ -334,7 +377,8 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                           child: _buildActionButton('Add', Icons.add, () {
                             final jcbWork = JcbWork(
                               id: idController.text.toString(),
-                              customerId: selectedCustomerId ?? '1', // Replace with actual customer ID
+                              customerId: selectedCustomerId ??
+                                  '1', // Replace with actual customer ID
                               WorkDate: DateTime.now().toString(),
                               WorkName: workNameController.text,
                               WorkDescription: workDescriptionController.text,
@@ -345,13 +389,16 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                               totalWorkAmount: totalWorkAmountController.text,
                               receivedAmount: receivedAmountController.text,
                             );
-                            context.read<JcbWorkBloc>().add(AddJcbWorkEvent(jcbWork));
+                            context
+                                .read<JcbWorkBloc>()
+                                .add(AddJcbWorkEvent(jcbWork));
                             _clearForm();
                           }),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _buildActionButton('Refresh', Icons.refresh, () {
+                          child:
+                              _buildActionButton('Refresh', Icons.refresh, () {
                             _clearForm();
                           }),
                         ),
@@ -361,7 +408,8 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                     _buildActionButton('Update', Icons.update, () {
                       final jcbWork = JcbWork(
                         id: jcbWorkData?.id ?? idController.text,
-                        customerId: selectedCustomerId ?? '1', // Replace with actual customer ID
+                        customerId: selectedCustomerId ??
+                            '1', // Replace with actual customer ID
                         WorkDate: DateTime.now().toString(),
                         WorkName: workNameController.text,
                         WorkDescription: workDescriptionController.text,
@@ -372,9 +420,14 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         totalWorkAmount: totalWorkAmountController.text,
                         receivedAmount: receivedAmountController.text,
                       );
-                      context.read<JcbWorkBloc>().add(UpdateJcbWorkEvent(jcbWork));
+                      context
+                          .read<JcbWorkBloc>()
+                          .add(UpdateJcbWorkEvent(jcbWork));
                       _clearForm();
-                    }, isEnabled: workNameController.text.isNotEmpty && lastUnitController.text.isNotEmpty && currentUnitController.text.isNotEmpty),
+                    },
+                        isEnabled: workNameController.text.isNotEmpty &&
+                            lastUnitController.text.isNotEmpty &&
+                            currentUnitController.text.isNotEmpty),
                   ],
                 ),
               ],
@@ -385,7 +438,8 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed, {bool isEnabled = true}) {
+  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed,
+      {bool isEnabled = true}) {
     return ElevatedButton.icon(
       onPressed: isEnabled ? onPressed : null,
       icon: Icon(icon),
@@ -400,7 +454,13 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
   }
 
   Widget _buildJcbWorkCard(JcbWork jcbWork) {
-    final customer = customers.firstWhere((customer) => customer.id == jcbWork.customerId, orElse: () => Customer(id: '', name: 'Unknown', address: 'Unknown', contactNumber: 'Unknown'));
+    final customer = customers.firstWhere(
+        (customer) => customer.id == jcbWork.customerId,
+        orElse: () => Customer(
+            id: '',
+            name: 'Unknown',
+            address: 'Unknown',
+            contactNumber: 'Unknown'));
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -450,9 +510,10 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         Expanded(
                           child: Text(
                             jcbWork.WorkDescription ?? '',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.black54,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.black54,
+                                    ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -470,10 +531,11 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         const SizedBox(width: 8),
                         Text(
                           jcbWork.WorkHours,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -489,9 +551,10 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         Expanded(
                           child: Text(
                             customer.name,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.black54,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.black54,
+                                    ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -510,9 +573,10 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         Expanded(
                           child: Text(
                             customer.address,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.black54,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.black54,
+                                    ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -531,9 +595,10 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         Expanded(
                           child: Text(
                             customer.contactNumber,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.black54,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.black54,
+                                    ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -559,7 +624,6 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
     setState(() {
       workNameController.clear();
       workDescriptionController.clear();
-      lastUnitController.clear();
       currentUnitController.clear();
       workHoursController.clear();
       workAmountController.clear();

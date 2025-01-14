@@ -25,6 +25,7 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
   List<TractorsWork> works = [];
   List<Customer> customers = [];
   bool isFormVisible = false;
+  TractorsWork? _selectedWork;
 
   final TextEditingController _workNameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -54,6 +55,7 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
 
   void _populateFields(TractorsWork work) {
     setState(() {
+      _selectedWork = work;
       _workNameController.text = work.workName;
       _quantityController.text = work.AreaOrQuantity;
       _amountPerUnitController.text = work.amountPerUnit;
@@ -113,11 +115,13 @@ class _TractorsWorkPageState extends State<TractorsWorkPage> {
     );
 
     if (buttonText == "Save") {
+      newWork.id = DateTime.now().toString();
       context.read<TractorsWorkBloc>().add(AddTractorsWorkEvent(newWork));
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Customer added successfully!")),
       );
     } else {
+      newWork.id = _selectedWork!.id;
       context.read<TractorsWorkBloc>().add(UpdateTractorsWorkEvent(newWork));
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Customer updated successfully!")),

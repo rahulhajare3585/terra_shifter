@@ -107,67 +107,81 @@ class _PlatesDetailsScreenState extends State<PlatesDetailsScreen> {
       appBar: AppBar(
         title: Text('Plates Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 5),
-            if (isAddingPlates) _buildPlatesForm(theme, localizations),
-            const SizedBox(height: 10),
-            Expanded(
-              child: BlocConsumer<PlatesBloc, PlatesState>(
-                listener: (context, state) {
-                  if (state is PlatesOperationSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    context.read<PlatesBloc>().add(GetAllPlatesEvent());
-                  } else if (state is PlatesError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.error),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    _toggleForm();
-                  }
-                },
-                builder: (context, state) {
-                  if (state is PlatesLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is PlatesLoaded) {
-                    final nextId = state.plates.isNotEmpty
-                        ? (state.plates.map((c) {
-                            try {
-                              return int.parse(c.id.toString());
-                            } catch (e) {
-                              return 0;
-                            }
-                          }).reduce((a, b) => a > b ? a : b) + 1)
-                            .toString()
-                        : '1';
-                    idController.text = nextId;
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: BlocConsumer<PlatesBloc, PlatesState>(
+                    listener: (context, state) {
+                      if (state is PlatesOperationSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.message),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        context.read<PlatesBloc>().add(GetAllPlatesEvent());
+                      } else if (state is PlatesError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.error),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                        _toggleForm();
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is PlatesLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is PlatesLoaded) {
+                        final nextId = state.plates.isNotEmpty
+                            ? (state.plates.map((c) {
+                                try {
+                                  return int.parse(c.id.toString());
+                                } catch (e) {
+                                  return 0;
+                                }
+                              }).reduce((a, b) => a > b ? a : b) + 1)
+                                .toString()
+                            : '1';
+                        idController.text = nextId;
 
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: state.plates.length,
-                      itemBuilder: (context, index) {
-                        final plates = state.plates[index];
-                        return _buildPlatesCard(plates, localizations);
-                      },
-                    );
-                  }
-                  return Center(child: Text("No data available"));
-                },
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: state.plates.length,
+                          itemBuilder: (context, index) {
+                            final plates = state.plates[index];
+                            return _buildPlatesCard(plates, localizations);
+                          },
+                        );
+                      }
+                      return Center(child: Text("No data available"));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isAddingPlates)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: _buildPlatesForm(theme, localizations),
               ),
             ),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _toggleForm,
@@ -290,7 +304,7 @@ class _PlatesDetailsScreenState extends State<PlatesDetailsScreen> {
                         );
                         context.read<PlatesBloc>().add(AddPlatesEvent(plates));
                         _clearForm();
-                      }),
+                      }, isEnabled: platesData == null),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -313,7 +327,7 @@ class _PlatesDetailsScreenState extends State<PlatesDetailsScreen> {
                   );
                   context.read<PlatesBloc>().add(UpdatePlatesEvent(plates));
                   _clearForm();
-                }, isEnabled: givenPlatesController.text.isNotEmpty && amountPer100PlatesController.text.isNotEmpty && givenDateController.text.isNotEmpty),
+                }, isEnabled: platesData != null && givenPlatesController.text.isNotEmpty && amountPer100PlatesController.text.isNotEmpty && givenDateController.text.isNotEmpty),
               ],
             ),
           ],
@@ -455,6 +469,7 @@ class _PlatesDetailsScreenState extends State<PlatesDetailsScreen> {
       receivedPlatesController.clear();
       receivedDateController.clear();
       selectedCustomer = null;
+      platesData = null;
       final platesId = int.tryParse(idController.text) ?? 0;
       idController.text = (platesId + 1).toString();
     });
