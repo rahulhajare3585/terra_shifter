@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:terra_shifter/data/models/jcb_work.dart';
 import 'package:terra_shifter/data/models/customer.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/Invoice/bloc/jcb_invoice_bloc.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/Invoice/jcb_invoice_page.dart';
+import 'package:terra_shifter/presentation/pages/screens/jcb/Invoice/service/jcb_invoice_page_service.dart';
 import 'package:terra_shifter/presentation/pages/screens/jcb/bloc/jcb_work_bloc.dart';
 import 'package:terra_shifter/presentation/pages/screens/jcb/bloc/jcb_work_event.dart';
 import 'package:terra_shifter/presentation/pages/screens/jcb/bloc/jcb_work_state.dart';
@@ -38,6 +41,7 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
     super.initState();
     _loadInitialData();
   }
+  
 
   void _loadInitialData() {
     context.read<JcbWorkBloc>().add(GetAllJcbWorksEvent());
@@ -111,6 +115,15 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('JCB Work'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              //add search filter as per customer name and contact number
+
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -605,13 +618,41 @@ class _JcbWorkScreenState extends State<JcbWorkScreen> {
                         ),
                       ],
                     ),
+                    Divider(),
+                    Row(
+                      children: [
+                        const Text('Rs :',style: TextStyle(color: Colors.green),),
+                        const SizedBox(width: 8),
+                        Text(
+                          jcbWork.totalWorkAmount,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+
+                        // widget at the end of row
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(Icons.receipt),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (context) => JCBInvoiceBloc(JcbInvoicePageService()),
+                                  child: JCBInvoicePage(customerId: jcbWork.customerId,),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ],
+                
                 ),
-              ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey,
-                size: 18,
               ),
             ],
           ),

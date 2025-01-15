@@ -11,6 +11,8 @@ class Plates {
   final double totalAmount;
   double? receivedAmount;
   double? pendingAmount;
+   String workDate;
+   String totalWorkAmount;
 
   Plates({
     required this.id,
@@ -25,6 +27,8 @@ class Plates {
     required this.totalAmount,
     this.receivedAmount,
     this.pendingAmount,
+    required this.workDate,
+    required this.totalWorkAmount,
   });
 
   Map<String, dynamic> toMap() {
@@ -41,6 +45,8 @@ class Plates {
       'totalAmount': totalAmount,
       'receivedAmount': receivedAmount,
       'pendingAmount': pendingAmount,
+      'workDate': workDate,
+      'totalWorkAmount': totalWorkAmount,
     };
   }
 
@@ -58,6 +64,8 @@ class Plates {
       totalAmount: map['totalAmount'],
       receivedAmount: map['receivedAmount'],
       pendingAmount: map['pendingAmount'],
+      workDate: map['workDate'],
+      totalWorkAmount: map['totalWorkAmount'],
     );
   }
 }

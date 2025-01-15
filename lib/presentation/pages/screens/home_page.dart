@@ -52,85 +52,100 @@ class _HomePage extends State<HomePage> {
     final localizations = AppLocalizations.of(context);
 
     return Scaffold(
+      backgroundColor: Colors.white, // Set background color
       body: isConnected
-          ? Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Pie Chart
-                  Expanded(
-                    flex: 2,
-                    child: SizedBox(
-                      height: 300,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 0,
-                          startDegreeOffset: 120,
-                          centerSpaceRadius: 50,
-                          sections: [
-                            PieChartSectionData(
-                              value: spentAmount,
-                              title:
-                                  localizations?.translate('spent') ?? 'Spent',
-                              color: Colors.red,
-                              radius: 50,
-                              titleStyle: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                              showTitle: true,
-                            ),
-                            PieChartSectionData(
-                              value: receivedAmount,
-                              title: localizations?.translate('received') ??
-                                  'Received',
-                              color: Colors.green,
-                              radius: 50,
-                              titleStyle: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                              showTitle: true,
-                            ),
-                            PieChartSectionData(
-                              value:
-                                  totalAmount - (spentAmount + receivedAmount),
-                              title: localizations?.translate('remaining') ??
-                                  'Remaining',
-                              color: Colors.blue,
-                              radius: 50,
-                              titleStyle: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                              showTitle: true,
-                            ),
-                          ],
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // App Header (Optional)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          localizations?.translate('terra_shifter') ?? 'Terra Shifter',
+                          style: const TextStyle(
+                              fontSize: 24.0, fontWeight: FontWeight.bold),
+                        ),
+                        // Add profile icon or other elements here
+                      ],
+                    ),
+                    const SizedBox(height: 20.0),
+
+                    // Pie Chart with modern styling
+                    Expanded(
+                      flex: 2,
+                      child: AspectRatio(
+                        aspectRatio: 1.6, // Adjust aspect ratio for better fit
+                        child: PieChart(
+                          PieChartData(
+                            sectionsSpace: 0,
+                            startDegreeOffset: 120,
+                            centerSpaceRadius: 50,
+                            sections: [
+                              PieChartSectionData(
+                                value: spentAmount,
+                                title:
+                                    localizations?.translate('spent') ?? 'Spent',
+                                color: Colors.redAccent,
+                                radius: 50,
+                                titleStyle: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                showTitle: true,
+                              ),
+                              PieChartSectionData(
+                                value: receivedAmount,
+                                title: localizations?.translate('received') ??
+                                    'Received',
+                                color: Colors.green,
+                                radius: 50,
+                                titleStyle: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                showTitle: true,
+                              ),
+                              PieChartSectionData(
+                                value:
+                                    totalAmount - (spentAmount + receivedAmount),
+                                title: localizations?.translate('remaining') ??
+                                    'Remaining',
+                                color: Colors.blue,
+                                radius: 50,
+                                titleStyle: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                showTitle: true,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  // Display Amounts
-                  Center(
-                    child: Expanded(
+                    const SizedBox(height: 20.0),
+
+                    // Amount Summary with improved layout
+                    Expanded(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '${localizations?.translate('spent_amount') ?? 'Spent Amount'}: \₹ ${spentAmount.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${localizations?.translate('received_amount') ?? 'Received Amount'}: \₹ ${receivedAmount.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${localizations?.translate('total_amount') ?? 'Total Amount'}: \₹ ${totalAmount.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
+                          _buildAmountSummary(
+                              localizations?.translate('spent_amount') ??
+                                  'Spent Amount',
+                              spentAmount),
+                          _buildAmountSummary(
+                              localizations?.translate('received_amount') ??
+                                  'Received Amount',
+                              receivedAmount),
+                          _buildAmountSummary(
+                              localizations?.translate('total_amount') ??
+                                  'Total Amount',
+                              totalAmount),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             )
           : Center(
@@ -223,8 +238,7 @@ class _HomePage extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BlocProvider(
-                            create: (context) =>
+                          builder: (context) => BlocProvider(create: (context) =>
                                 FuelConsumptionBloc(FuelConsumptionService()),
                             child: FuelConsumptionScreen(),
                           ),
@@ -239,6 +253,23 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  // Helper function to build amount summary widgets
+  Widget _buildAmountSummary(String title, double amount) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(width: 8.0),
+        Text(
+          '\₹ ${amount.toStringAsFixed(2)}',
+          style: const TextStyle(fontSize: 16.0),
+        ),
+      ],
     );
   }
 }
