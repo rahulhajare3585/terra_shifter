@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage>
         },
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: Colors.blueGrey[50],
+            
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(

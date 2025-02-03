@@ -16,7 +16,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (_isValidEmail(event.email) && _isValidPassword(event.password)) {
         try {
           final user = await loginService.getUser(event.email, event.password);
-          if (user != null && user.password == event.password) {
+          if (user != null && user.password == event.password && user.isVerified) {
             emit(LoginSuccess(user,"User logged in successfully"));
           } else {
             emit(LoginError("Invalid credentials"));

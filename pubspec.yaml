@@ -28,6 +28,8 @@ dependencies:
   pdf: ^3.11.1
   printing: ^5.13.4
   internet_connection_checker: ^1.0.0
+  animate_do: ^3.3.4
+  local_auth: ^2.3.0
 
 flutter_icons:
   android: true

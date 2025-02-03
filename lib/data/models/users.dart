@@ -7,6 +7,7 @@ class Users {
   final String contactNumber;
   final String address;
   final DateTime dateOfBirth;
+  bool isVerified = false;
 
   Users({
     required this.name,
@@ -15,6 +16,7 @@ class Users {
     required this.contactNumber,
     required this.address,
     required this.dateOfBirth,
+    this.isVerified = false,
   });
 
   factory Users.fromMap(Map<String, dynamic> data) {
@@ -25,6 +27,7 @@ class Users {
       contactNumber: data['contactNumber'] ?? '',
       address: data['address'] ?? '',
       dateOfBirth: (data['dateOfBirth'] as Timestamp).toDate(),
+      isVerified: data['isVerified'] ?? false,
     );
   }
 
@@ -36,6 +39,7 @@ class Users {
       'contactNumber': contactNumber,
       'address': address,
       'dateOfBirth': Timestamp.fromDate(dateOfBirth),
+      'isVerified': isVerified,
     };
   }
 }

@@ -5,8 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:terra_shifter/core/utils/locale/locale_notifier.dart';
 import 'package:terra_shifter/core/usecases/app_localization.dart';
+import 'package:terra_shifter/data/Services/login_service.dart';
 import 'package:terra_shifter/data/Services/tractor_work_service.dart';
+import 'package:terra_shifter/presentation/blocs/login/login_bloc.dart';
 import 'package:terra_shifter/presentation/blocs/tractor/tractor_work_bloc.dart';
+import 'package:terra_shifter/presentation/pages/authentication/login_page.dart';
+import 'package:terra_shifter/presentation/pages/biomatric/biometric_auth.dart';
 import 'package:terra_shifter/presentation/pages/landing/landing_page.dart';
 import 'package:terra_shifter/presentation/pages/tractors/tractors_work_page.dart';
 import 'core/utils/theme_notifier.dart';
@@ -48,7 +52,11 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       locale: localeNotifier.locale,
-      home:LandingPage(),
+      home: BiometricAuth(),
+      // home:BlocProvider(
+      //   create: (context) => LoginBloc(LoginService()),
+      //   child: LoginPage(),
+      // ),
     );
   }
 }

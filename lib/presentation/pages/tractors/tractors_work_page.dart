@@ -775,48 +775,51 @@ class WorkNameSelectionSheet extends StatelessWidget {
         right: 16,
         top: 16,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('Select Work Name',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          ListTile(
-            title: const Text('Shifting (Tailor)'),
-            onTap: () => onWorkNameSelected('Shifting (Tailor)'),
-            selected: selectedWorkName == 'Shifting (Tailor)',
-          ),
-          ListTile(
-            title: const Text('Nangar'),
-            onTap: () => onWorkNameSelected('Nangar'),
-            selected: selectedWorkName == 'Nangar',
-          ),
-          ListTile(
-            title: const Text('Roter'),
-            onTap: () => onWorkNameSelected('Roter'),
-            selected: selectedWorkName == 'Roter',
-          ),
-          ListTile(
-            title: const Text('Level'),
-            onTap: () => onWorkNameSelected('Level'),
-            selected: selectedWorkName == 'Level',
-          ),
-          ListTile(
-            title: const Text('Fun'),
-            onTap: () => onWorkNameSelected('Fun'),
-            selected: selectedWorkName == 'Fun',
-          ),
-          ListTile(
-            title: const Text('Bhar'),
-            onTap: () => onWorkNameSelected('Bhar'),
-            selected: selectedWorkName == 'Bhar',
-          ),
-          ListTile(
-            title: const Text('Razor (Sari)'),
-            onTap: () => onWorkNameSelected('Razor (Sari)'),
-            selected: selectedWorkName == 'Razor (Sari)',
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select Work Name',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Text('Shifting (Tailor)'),
+              onTap: () => onWorkNameSelected('Shifting (Tailor)'),
+              selected: selectedWorkName == 'Shifting (Tailor)',
+            ),
+            ListTile(
+              title: const Text('Nangar'),
+              onTap: () => onWorkNameSelected('Nangar'),
+              selected: selectedWorkName == 'Nangar',
+            ),
+            ListTile(
+              title: const Text('Roter'),
+              onTap: () => onWorkNameSelected('Roter'),
+              selected: selectedWorkName == 'Roter',
+            ),
+            ListTile(
+              title: const Text('Level'),
+              onTap: () => onWorkNameSelected('Level'),
+              selected: selectedWorkName == 'Level',
+            ),
+            ListTile(
+              title: const Text('Fun'),
+              onTap: () => onWorkNameSelected('Fun'),
+              selected: selectedWorkName == 'Fun',
+            ),
+            ListTile(
+              title: const Text('Bhar'),
+              onTap: () => onWorkNameSelected('Bhar'),
+              selected: selectedWorkName == 'Bhar',
+            ),
+            ListTile(
+              title: const Text('Razor (Sari)'),
+              onTap: () => onWorkNameSelected('Razor (Sari)'),
+              selected: selectedWorkName == 'Razor (Sari)',
+            ),
+          ],
+        ),
       ),
     );
   }

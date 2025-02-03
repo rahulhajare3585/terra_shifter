@@ -10,9 +10,6 @@ import 'package:terra_shifter/presentation/pages/screens/plates/bloc/plates_bloc
 import 'package:terra_shifter/presentation/pages/screens/plates/service/plates_service.dart';
 import 'package:terra_shifter/data/Services/tractor_work_service.dart';
 import 'package:terra_shifter/presentation/blocs/tractor/tractor_work_bloc.dart';
-import 'package:terra_shifter/presentation/pages/screens/jcb/bloc/jcb_work_bloc.dart';
-import 'package:terra_shifter/presentation/pages/screens/jcb/jcb_work_screen.dart';
-import 'package:terra_shifter/presentation/pages/screens/jcb/service/jcb_work_service.dart';
 import 'package:terra_shifter/presentation/pages/screens/plates/plates_details_screen.dart';
 import 'package:terra_shifter/presentation/pages/tractors/tractors_work_page.dart';
 import 'package:http/http.dart' as http;
@@ -56,78 +53,65 @@ class _HomePage extends State<HomePage> {
       body: isConnected
           ? SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // App Header (Optional)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          localizations?.translate('terra_shifter') ?? 'Terra Shifter',
-                          style: const TextStyle(
-                              fontSize: 24.0, fontWeight: FontWeight.bold),
-                        ),
-                        // Add profile icon or other elements here
-                      ],
-                    ),
-                    const SizedBox(height: 20.0),
 
                     // Pie Chart with modern styling
                     Expanded(
                       flex: 2,
                       child: AspectRatio(
                         aspectRatio: 1.6, // Adjust aspect ratio for better fit
-                        child: PieChart(
-                          PieChartData(
-                            sectionsSpace: 0,
-                            startDegreeOffset: 120,
-                            centerSpaceRadius: 50,
-                            sections: [
-                              PieChartSectionData(
-                                value: spentAmount,
-                                title:
-                                    localizations?.translate('spent') ?? 'Spent',
-                                color: Colors.redAccent,
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                                showTitle: true,
-                              ),
-                              PieChartSectionData(
-                                value: receivedAmount,
-                                title: localizations?.translate('received') ??
-                                    'Received',
-                                color: Colors.green,
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                                showTitle: true,
-                              ),
-                              PieChartSectionData(
-                                value:
-                                    totalAmount - (spentAmount + receivedAmount),
-                                title: localizations?.translate('remaining') ??
-                                    'Remaining',
-                                color: Colors.blue,
-                                radius: 50,
-                                titleStyle: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                                showTitle: true,
-                              ),
-                            ],
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 220,left: 90),
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 0,
+                              startDegreeOffset: 120,
+                              centerSpaceRadius: 50,
+                              sections: [
+                                PieChartSectionData(
+                                  value: spentAmount,
+                                  title:
+                                      localizations?.translate('spent') ?? 'Spent',
+                                  color: Colors.redAccent,
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                  showTitle: true,
+                                ),
+                                PieChartSectionData(
+                                  value: receivedAmount,
+                                  title: localizations?.translate('received') ??
+                                      'Received',
+                                  color: Colors.green,
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                  showTitle: true,
+                                ),
+                                PieChartSectionData(
+                                  value:
+                                      totalAmount - (spentAmount + receivedAmount),
+                                  title: localizations?.translate('remaining') ??
+                                      'Remaining',
+                                  color: Colors.blue,
+                                  radius: 50,
+                                  titleStyle: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                  showTitle: true,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 20.0),
-
-                    // Amount Summary with improved layout
-                    Expanded(
+                    Padding(
+                      padding: EdgeInsets.only(top: 20,right: 10),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildAmountSummary(
                               localizations?.translate('spent_amount') ??
@@ -144,7 +128,10 @@ class _HomePage extends State<HomePage> {
                         ],
                       ),
                     ),
-                  ],
+                  
+
+                    // Amount Summary with improved layout
+                    ],
                 ),
               ),
             )
@@ -159,7 +146,7 @@ class _HomePage extends State<HomePage> {
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 36.0), // Move up by 20
+        padding: const EdgeInsets.only(bottom: 40.0), // Move up by 20
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -206,28 +193,28 @@ class _HomePage extends State<HomePage> {
               child: Image.asset('assets/images/tractor.png',
                   width: 50, height: 50),
             ),
-            const SizedBox(width: 16),
-            FloatingActionButton(
-              heroTag: 'jcb', // Unique hero tag
-              backgroundColor: Colors.white,
-              onPressed: isConnected
-                  ? () {
-                      // Add your functionality here
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BlocProvider(
-                            create: (context) => JcbWorkBloc(JcbWorkService()),
-                            child: JcbWorkScreen(),
-                          ),
-                        ),
-                      );
-                    }
-                  : null,
-              tooltip: localizations?.translate('fuel') ?? 'Fuel',
-              child:
-                  Image.asset('assets/images/jcb.png', width: 50, height: 50),
-            ),
+            // const SizedBox(width: 16),
+            // FloatingActionButton(
+            //   heroTag: 'jcb', // Unique hero tag
+            //   backgroundColor: Colors.white,
+            //   onPressed: isConnected
+            //       ? () {
+            //           // Add your functionality here
+            //           Navigator.push(
+            //             context,
+            //             MaterialPageRoute(
+            //               builder: (context) => BlocProvider(
+            //                 create: (context) => JcbWorkBloc(JcbWorkService()),
+            //                 child: JcbWorkScreen(),
+            //               ),
+            //             ),
+            //           );
+            //         }
+            //       : null,
+            //   tooltip: localizations?.translate('fuel') ?? 'Fuel',
+            //   child:
+            //       Image.asset('assets/images/jcb.png', width: 50, height: 50),
+            // ),
             const SizedBox(width: 16),
             FloatingActionButton(
               heroTag: 'fuel', // Unique hero tag
